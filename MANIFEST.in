@@ -1,0 +1,2 @@
+include LICENSE README.md setup.cfg
+include *.py
