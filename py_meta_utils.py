@@ -1,5 +1,3 @@
-import os
-
 from collections import namedtuple
 
 _missing = type('_missing', (), {'__bool__': lambda x: False})()
