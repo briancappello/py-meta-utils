@@ -146,6 +146,13 @@ class Singleton(type):
         return cls._instances[cls] if cls in cls._instances else None
 
 
+class SubclassableSingleton(Singleton):
+    def __call__(cls, *args, **kwargs):
+        while cls.__subclasses__():
+            cls = cls.__subclasses__()[0]
+        return super().__call__(*args, **kwargs)
+
+
 def deep_getattr(clsdict, bases, name, default=_missing):
     """
     Acts just like getattr would on a constructed class object, except this operates
