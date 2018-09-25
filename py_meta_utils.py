@@ -144,7 +144,7 @@ class Singleton(type):
         return cls._instances[cls]
 
     @property
-    def instance(cls):
+    def _instance(cls):
         return cls._instances[cls] if cls in cls._instances else None
 
 
