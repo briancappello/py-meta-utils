@@ -18,20 +18,20 @@ class McsArgs:
         return self.clsdict.get('__module__')
 
     @property
-    def model_repr(self):
+    def repr(self):
         if self.module:
             return f'{self.module}.{self.name}'
         return self.name
 
     @property
-    def model_meta(self):
+    def meta(self):
         return self.clsdict['_meta']
 
     def __iter__(self):
         return iter([self.mcs, self.name, self.bases, self.clsdict])
 
     def __repr__(self):
-        return f'<McsArgs model={self.model_repr}>'
+        return f'<McsArgs class={self.repr}>'
 
 
 class MetaOption:
@@ -40,17 +40,17 @@ class MetaOption:
         self.default = default
         self.inherit = inherit
 
-    def get_value(self, meta, base_model_meta, mcs_args: McsArgs):
+    def get_value(self, meta, base_classes_meta, mcs_args: McsArgs):
         """
-        :param meta: the class Meta (if any) from the user's model (NOTE:
-            this will be a plain object, NOT an instance of ModelMetaOptions)
-        :param base_model_meta: the ModelMetaOptions (if any) from the
-            base class of the user's model
-        :param mcs_args: the McsArgs for the user's model class
+        :param meta: the class Meta (if any) from the class (NOTE: this will
+                     be a plain object, NOT an instance of MetaOptionsFactory)
+        :param base_classes_meta: the MetaOptionsFactory (if any) from the
+                                  base class of the class
+        :param mcs_args: the McsArgs for the class
         """
         value = self.default
-        if self.inherit and base_model_meta is not None:
-            value = getattr(base_model_meta, self.name, value)
+        if self.inherit and base_classes_meta is not None:
+            value = getattr(base_classes_meta, self.name, value)
         if meta is not None:
             value = getattr(meta, self.name, value)
         return value
@@ -70,10 +70,10 @@ class AbstractMetaOption(MetaOption):
     def __init__(self):
         super().__init__(name='abstract', default=False, inherit=False)
 
-    def get_value(self, meta, base_model_meta, mcs_args: McsArgs):
+    def get_value(self, meta, base_classes_meta, mcs_args: McsArgs):
         if '__abstract__' in mcs_args.clsdict:
             return True
-        return super().get_value(meta, base_model_meta, mcs_args)
+        return super().get_value(meta, base_classes_meta, mcs_args)
 
     def contribute_to_class(self, mcs_args: McsArgs, is_abstract):
         if is_abstract:
@@ -94,19 +94,19 @@ class MetaOptionsFactory:
         self._mcs_args = mcs_args
 
         meta = mcs_args.clsdict.pop('Meta', None)
-        base_model_meta = deep_getattr(
+        base_classes_meta = deep_getattr(
             mcs_args.clsdict, mcs_args.bases, '_meta', None)
 
         mcs_args.clsdict['_meta'] = self
 
         options = self._get_meta_options()
 
-        self._fill_from_meta(meta, base_model_meta, mcs_args)
+        self._fill_from_meta(meta, base_classes_meta, mcs_args)
         for option in options:
             option_value = getattr(self, option.name, None)
             option.contribute_to_class(mcs_args, option_value)
 
-    def _fill_from_meta(self, meta, base_model_meta, mcs_args: McsArgs):
+    def _fill_from_meta(self, meta, base_classes_meta, mcs_args: McsArgs):
         # Exclude private/protected fields from the meta
         meta_attrs = {} if not meta else {k: v for k, v in vars(meta).items()
                                           if not k.startswith('_')}
@@ -114,7 +114,7 @@ class MetaOptionsFactory:
         for option in self._get_meta_options():
             assert not hasattr(self, option.name), \
                 f"Can't override field {option.name}."
-            value = option.get_value(meta, base_model_meta, mcs_args)
+            value = option.get_value(meta, base_classes_meta, mcs_args)
             option.check_value(value, mcs_args)
             meta_attrs.pop(option.name, None)
             if option.name != '_':
