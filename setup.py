@@ -7,7 +7,7 @@ with open('README.md', encoding='utf-8') as f:
 
 setup(
     name='Py Meta Utils',
-    version='0.1.1',
+    version='0.2.0',
     description='Metaclass utilities for Python',
     long_description=long_description,
     url='https://github.com/briancappello/py-meta-utils',

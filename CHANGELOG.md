@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.2.0 (unreleased)
+## 0.2.0 (2018/09/28)
 
 - add missing `OptionalClass` and `OptionalMetaclass` classes
 - rename `McsArgs.model_repr` to `McsArgs.repr`
