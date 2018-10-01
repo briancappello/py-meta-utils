@@ -3,6 +3,8 @@ from collections import namedtuple
 _missing = type('_missing', (), {'__bool__': lambda x: False})()
 
 
+META_OPTIONS_FACTORY_CLASS_ATTR_NAME = '_meta_options_factory_class'
+
 McsInitArgs = namedtuple('McsInitArgs', ('cls', 'name', 'bases', 'clsdict'))
 
 
@@ -131,6 +133,18 @@ class MetaOptionsFactory:
             cls=self.__class__.__name__,
             attrs={option.name: getattr(self, option.name, None)
                    for option in self._get_meta_options()})
+
+
+def apply_factory_meta_options(mcs_args: McsArgs,
+                               default_factory_class=MetaOptionsFactory,
+                               factory_attr_name=None):
+    factory_cls = deep_getattr(
+        mcs_args.clsdict, mcs_args.bases,
+        factory_attr_name or META_OPTIONS_FACTORY_CLASS_ATTR_NAME,
+        default_factory_class)
+    options_factory = factory_cls()
+    options_factory._contribute_to_class(mcs_args)
+    return options_factory
 
 
 class Singleton(type):

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.3.0 (unreleased)
+
+- add the `apply_factory_meta_options` function for consumer metaclasses
+
 ## 0.2.0 (2018/09/28)
 
 - add missing `OptionalClass` and `OptionalMetaclass` classes
