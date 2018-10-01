@@ -2,7 +2,9 @@
 
 ## 0.3.0 (unreleased)
 
+- rename `McsArgs.meta` to `McsArgs.Meta`
 - add the `apply_factory_meta_options` function for consumer metaclasses
+- previously we popped the user's `Meta` class and renamed it to `_meta` after applying the factory options. Now we keep it named as `Meta` (although we replace the user's `Meta` class with the meta options factory instance)
 
 ## 0.2.0 (2018/09/28)
 
