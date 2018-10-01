@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.3.0 (unreleased)
+## 0.3.0 (2018/09/30)
 
 - rename `McsArgs.meta` to `McsArgs.Meta`
 - add the `apply_factory_meta_options` function for consumer metaclasses
