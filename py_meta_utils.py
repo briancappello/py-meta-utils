@@ -26,7 +26,7 @@ class McsArgs:
         return self.clsdict.get('__module__')
 
     @property
-    def repr(self) -> str:
+    def qualname(self) -> str:
         if self.module:
             return f'{self.module}.{self.name}'
         return self.name
@@ -39,7 +39,7 @@ class McsArgs:
         return iter([self.mcs, self.name, self.bases, self.clsdict])
 
     def __repr__(self):
-        return f'<McsArgs class={self.repr}>'
+        return f'<McsArgs class={self.qualname}>'
 
 
 class MetaOption:
