@@ -193,7 +193,7 @@ class MetaOptionsFactory(metaclass=EnsureProtected):
     _options = []
 
     def __init__(self):
-        self._mcs_args: McsArgs = None
+        self._mcs_args = None
 
     def _get_meta_options(self) -> List[MetaOption]:
         """
