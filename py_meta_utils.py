@@ -1,4 +1,5 @@
 from collections import namedtuple
+from typing import *
 
 
 _missing = type('_missing', (), {'__bool__': lambda x: False})()
@@ -10,24 +11,28 @@ McsInitArgs = namedtuple('McsInitArgs', ('cls', 'name', 'bases', 'clsdict'))
 
 
 class McsArgs:
-    def __init__(self, mcs, name, bases, clsdict):
+    def __init__(self,
+                 mcs: type,
+                 name: str,
+                 bases: Tuple[Type[object], ...],
+                 clsdict: Dict[str, Any]):
         self.mcs = mcs
         self.name = name
         self.bases = bases
         self.clsdict = clsdict
 
     @property
-    def module(self):
+    def module(self) -> Union[str, None]:
         return self.clsdict.get('__module__')
 
     @property
-    def repr(self):
+    def repr(self) -> str:
         if self.module:
             return f'{self.module}.{self.name}'
         return self.name
 
     @property
-    def Meta(self):
+    def Meta(self) -> object:
         return self.clsdict['Meta']
 
     def __iter__(self):
@@ -38,12 +43,12 @@ class McsArgs:
 
 
 class MetaOption:
-    def __init__(self, name, default=None, inherit=False):
+    def __init__(self, name: str, default: Any = None, inherit: bool = False):
         self.name = name
         self.default = default
         self.inherit = inherit
 
-    def get_value(self, Meta, base_classes_meta, mcs_args: McsArgs):
+    def get_value(self, Meta: object, base_classes_meta, mcs_args: McsArgs):
         """
         :param Meta: the class Meta (if any) from the class (NOTE: this will
                      be a plain object, NOT an instance of MetaOptionsFactory)
@@ -58,10 +63,10 @@ class MetaOption:
             value = getattr(Meta, self.name, value)
         return value
 
-    def check_value(self, value, mcs_args: McsArgs):
+    def check_value(self, value: Any, mcs_args: McsArgs):
         pass
 
-    def contribute_to_class(self, mcs_args: McsArgs, value):
+    def contribute_to_class(self, mcs_args: McsArgs, value: Any):
         pass
 
     def __repr__(self):
@@ -73,7 +78,7 @@ class AbstractMetaOption(MetaOption):
     def __init__(self):
         super().__init__(name='abstract', default=False, inherit=False)
 
-    def get_value(self, Meta, base_classes_meta, mcs_args: McsArgs):
+    def get_value(self, Meta: object, base_classes_meta, mcs_args: McsArgs):
         if ABSTRACT_ATTR in mcs_args.clsdict:
             return True
         return super().get_value(Meta, base_classes_meta, mcs_args)
@@ -89,7 +94,7 @@ class MetaOptionsFactory:
     def __init__(self):
         self._mcs_args: McsArgs = None
 
-    def _get_meta_options(self):
+    def _get_meta_options(self) -> List[MetaOption]:
         return [option if isinstance(option, MetaOption) else option()
                 for option in self.options]
 
@@ -109,7 +114,7 @@ class MetaOptionsFactory:
             option_value = getattr(self, option.name, None)
             option.contribute_to_class(mcs_args, option_value)
 
-    def _fill_from_meta(self, Meta, base_classes_meta, mcs_args: McsArgs):
+    def _fill_from_meta(self, Meta: object, base_classes_meta, mcs_args: McsArgs):
         # Exclude private/protected fields from the Meta
         meta_attrs = {} if not Meta else {k: v for k, v in vars(Meta).items()
                                           if not k.startswith('_')}
@@ -136,9 +141,10 @@ class MetaOptionsFactory:
                    for option in self._get_meta_options()})
 
 
-def apply_factory_meta_options(mcs_args: McsArgs,
-                               default_factory_class=MetaOptionsFactory,
-                               factory_attr_name=None):
+def apply_factory_meta_options(
+        mcs_args: McsArgs,
+        default_factory_class: Type[MetaOptionsFactory] = MetaOptionsFactory,
+        factory_attr_name: Optional[str] = None) -> MetaOptionsFactory:
     factory_cls = deep_getattr(
         mcs_args.clsdict, mcs_args.bases,
         factory_attr_name or META_OPTIONS_FACTORY_CLASS_ATTR_NAME,
@@ -168,7 +174,10 @@ class SubclassableSingleton(Singleton):
         return super().__call__(*args, **kwargs)
 
 
-def deep_getattr(clsdict, bases, name, default=_missing):
+def deep_getattr(clsdict: Dict[str, Any],
+                 bases: Tuple[Type[object], ...],
+                 name: str,
+                 default: Any = _missing) -> Any:
     """
     Acts just like getattr would on a constructed class object, except this operates
     on the pre-class-construction class dictionary and base classes. In other words,

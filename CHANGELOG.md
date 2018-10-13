@@ -3,6 +3,7 @@
 ## 0.4.0 (unreleased)
 
 - make `__abstract__` a constant
+- add type hints
 
 ## 0.3.0 (2018/09/30)
 
