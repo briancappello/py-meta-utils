@@ -1,8 +1,9 @@
 from collections import namedtuple
 
+
 _missing = type('_missing', (), {'__bool__': lambda x: False})()
 
-
+ABSTRACT_ATTR = '__abstract__'
 META_OPTIONS_FACTORY_CLASS_ATTR_NAME = '_meta_options_factory_class'
 
 McsInitArgs = namedtuple('McsInitArgs', ('cls', 'name', 'bases', 'clsdict'))
@@ -73,13 +74,13 @@ class AbstractMetaOption(MetaOption):
         super().__init__(name='abstract', default=False, inherit=False)
 
     def get_value(self, Meta, base_classes_meta, mcs_args: McsArgs):
-        if '__abstract__' in mcs_args.clsdict:
+        if ABSTRACT_ATTR in mcs_args.clsdict:
             return True
         return super().get_value(Meta, base_classes_meta, mcs_args)
 
     def contribute_to_class(self, mcs_args: McsArgs, is_abstract):
         if is_abstract:
-            mcs_args.clsdict['__abstract__'] = True
+            mcs_args.clsdict[ABSTRACT_ATTR] = True
 
 
 class MetaOptionsFactory:

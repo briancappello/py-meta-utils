@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.4.0 (unreleased)
+
+- make `__abstract__` a constant
+
 ## 0.3.0 (2018/09/30)
 
 - rename `McsArgs.meta` to `McsArgs.Meta`
