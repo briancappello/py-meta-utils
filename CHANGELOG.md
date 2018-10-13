@@ -11,6 +11,7 @@
 - rename `MetaOptionsFactory.options` to `MetaOptionsFactory._options`
 - add a metaclass on `MetaOptionsFactory` to ensure subclasses can only add protected attributes and/or methods
 - remove the `Singleton._instance` property
+- add documentation
 
 ## 0.3.0 (2018/09/30)
 
