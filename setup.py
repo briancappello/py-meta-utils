@@ -14,15 +14,6 @@ setup(
     author='Brian Cappello',
     license='MIT',
 
-    # https://pypi.python.org/pypi?%3Aaction=list_classifiers
-    classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-    ],
     py_modules=['py_meta_utils'],
     install_requires=[],
     extras_require={
@@ -36,4 +27,14 @@ setup(
     python_requires='>=3.5',
     include_package_data=True,
     zip_safe=False,
+
+    # https://pypi.python.org/pypi?%3Aaction=list_classifiers
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+    ],
 )

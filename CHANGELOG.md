@@ -6,6 +6,7 @@
 - add type hints
 - rename `McsArgs.repr` to `McsArgs.qualname`
 - add `McsArgs.is_abstract` property
+- make compatible with Python 3.5
 
 ## 0.3.0 (2018/09/30)
 

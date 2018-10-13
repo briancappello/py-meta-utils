@@ -28,7 +28,7 @@ class McsArgs:
     @property
     def qualname(self) -> str:
         if self.module:
-            return f'{self.module}.{self.name}'
+            return self.module + '.' + self.name
         return self.name
 
     @property
@@ -48,7 +48,7 @@ class McsArgs:
         return iter([self.mcs, self.name, self.bases, self.clsdict])
 
     def __repr__(self):
-        return f'<McsArgs class={self.qualname}>'
+        return '<McsArgs class={qualname!r}>'.format(qualname=self.qualname)
 
 
 class MetaOption:
@@ -79,8 +79,11 @@ class MetaOption:
         pass
 
     def __repr__(self):
-        return f'<{self.__class__.__name__} name={self.name!r}, ' \
-               f'default={self.default!r}, inherit={self.inherit}>'
+        return '{cls}(name={name!r}, default={default!r}, inherit={inherit})'.format(
+            cls=self.__class__.__name__,
+            name=self.name,
+            default=self.default,
+            inherit=self.inherit)
 
 
 class AbstractMetaOption(MetaOption):
@@ -130,7 +133,7 @@ class MetaOptionsFactory:
 
         for option in self._get_meta_options():
             assert not hasattr(self, option.name), \
-                f"Can't override field {option.name}."
+                "Can't override field {name}.".format(name=option.name)
             value = option.get_value(Meta, base_classes_meta, mcs_args)
             option.check_value(value, mcs_args)
             meta_attrs.pop(option.name, None)
@@ -138,10 +141,11 @@ class MetaOptionsFactory:
                 setattr(self, option.name, value)
 
         if meta_attrs:
-            # Some attributes in the Meta aren't allowed here
+            # Only allow attributes on the Meta that have a respective MetaOption
             raise TypeError(
-                f"'class Meta' for {self._mcs_args.name!r} got unknown "
-                f"attribute(s) {','.join(sorted(meta_attrs.keys()))}")
+                '`class Meta` for {cls} got unknown attribute(s) {attrs}'.format(
+                    cls=mcs_args.name,
+                    attrs=', '.join(sorted(meta_attrs.keys()))))
 
     def __repr__(self):
         return '<{cls} meta_options={attrs!r}>'.format(
