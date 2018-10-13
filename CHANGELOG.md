@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.4.0 (unreleased)
+## 0.4.0 (2018/10/13)
 
 - make `__abstract__` a constant
 - add type hints
