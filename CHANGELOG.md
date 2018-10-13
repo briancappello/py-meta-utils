@@ -5,6 +5,7 @@
 - make `__abstract__` a constant
 - add type hints
 - rename `McsArgs.repr` to `McsArgs.qualname`
+- add `McsArgs.is_abstract` property
 
 ## 0.3.0 (2018/09/30)
 
