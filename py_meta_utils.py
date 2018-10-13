@@ -90,14 +90,20 @@ class AbstractMetaOption(MetaOption):
     def __init__(self):
         super().__init__(name='abstract', default=False, inherit=False)
 
-    def get_value(self, Meta: object, base_classes_meta, mcs_args: McsArgs):
-        if ABSTRACT_ATTR in mcs_args.clsdict:
+    def get_value(self, Meta, base_classes_meta, mcs_args: McsArgs):
+        if mcs_args.clsdict.get(ABSTRACT_ATTR, False) is True:
             return True
-        return super().get_value(Meta, base_classes_meta, mcs_args)
+        return super().get_value(Meta, base_classes_meta, mcs_args) is True
 
-    def contribute_to_class(self, mcs_args: McsArgs, is_abstract):
-        if is_abstract:
+    def check_value(self, value: Any, mcs_args: McsArgs):
+        if not isinstance(value, bool):
+            raise TypeError('The abstract Meta option must be either True or False')
+
+    def contribute_to_class(self, mcs_args: McsArgs, value):
+        if value is True:
             mcs_args.clsdict[ABSTRACT_ATTR] = True
+        else:
+            mcs_args.clsdict[ABSTRACT_ATTR] = False
 
 
 class MetaOptionsFactory:
