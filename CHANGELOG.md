@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.4.1 (unreleased)
+
+- add tests
+
 ## 0.4.0 (2018/10/13)
 
 - make `__abstract__` a constant
