@@ -107,14 +107,14 @@ class AbstractMetaOption(MetaOption):
 
 
 class MetaOptionsFactory:
-    options = []
+    _options = []
 
     def __init__(self):
         self._mcs_args: McsArgs = None
 
     def _get_meta_options(self) -> List[MetaOption]:
         return [option if isinstance(option, MetaOption) else option()
-                for option in self.options]
+                for option in self._options]
 
     def _contribute_to_class(self, mcs_args: McsArgs):
         self._mcs_args = mcs_args
@@ -123,12 +123,12 @@ class MetaOptionsFactory:
         base_classes_meta = deep_getattr(
             mcs_args.clsdict, mcs_args.bases, 'Meta', None)
 
-        mcs_args.clsdict['Meta'] = self
-
-        options = self._get_meta_options()
-
+        mcs_args.clsdict['Meta'] = self  # must come before _fill_from_meta, because
+                                         # some meta options may depend upon having
+                                         # access to the values of earlier meta options
         self._fill_from_meta(Meta, base_classes_meta, mcs_args)
-        for option in options:
+
+        for option in self._get_meta_options():
             option_value = getattr(self, option.name, None)
             option.contribute_to_class(mcs_args, option_value)
 

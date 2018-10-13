@@ -8,6 +8,7 @@
 - add `McsArgs.is_abstract` property
 - make compatible with Python 3.5
 - ensure `abstract` meta option is always a boolean
+- rename `MetaOptionsFactory.options` to `MetaOptionsFactory._options`
 
 ## 0.3.0 (2018/09/30)
 
