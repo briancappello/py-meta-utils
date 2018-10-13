@@ -1,8 +1,8 @@
 # CHANGELOG
 
-## 0.4.1 (unreleased)
+## 0.4.1 (2018/10/13)
 
-- add tests
+- add unit tests
 
 ## 0.4.0 (2018/10/13)
 
