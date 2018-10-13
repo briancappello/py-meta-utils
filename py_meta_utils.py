@@ -191,10 +191,6 @@ class Singleton(type):
             cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
 
-    @property
-    def _instance(cls):
-        return cls._instances[cls] if cls in cls._instances else None
-
 
 class SubclassableSingleton(Singleton):
     def __call__(cls, *args, **kwargs):
