@@ -9,6 +9,7 @@
 - make compatible with Python 3.5
 - ensure `abstract` meta option is always a boolean
 - rename `MetaOptionsFactory.options` to `MetaOptionsFactory._options`
+- add a metaclass on `MetaOptionsFactory` to ensure subclasses can only add protected attributes and/or methods
 
 ## 0.3.0 (2018/09/30)
 

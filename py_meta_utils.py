@@ -106,7 +106,17 @@ class AbstractMetaOption(MetaOption):
             mcs_args.clsdict[ABSTRACT_ATTR] = False
 
 
-class MetaOptionsFactory:
+class EnsureProtected(type):
+    def __init__(cls, name, bases, clsdict):
+        for attr in clsdict:
+            if not attr.startswith('_'):
+                raise NameError('{cls}.{attr} must be protected '
+                                '(rename to {cls}._{attr})'.format(cls=name,
+                                                                   attr=attr))
+        super().__init__(name, bases, clsdict)
+
+
+class MetaOptionsFactory(metaclass=EnsureProtected):
     _options = []
 
     def __init__(self):
