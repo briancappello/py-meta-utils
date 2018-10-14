@@ -49,8 +49,8 @@ class McsArgs:
     @property
     def qualname(self) -> str:
         """
-        Returns the fully qualified name of the class, if possible, otherwise just the
-        class name.
+        Returns the fully qualified name of the class-under-construction, if possible,
+        otherwise just the class name.
         """
         if self.module:
             return self.module + '.' + self.name
@@ -68,12 +68,13 @@ class McsArgs:
     @property
     def is_abstract(self) -> bool:
         """
-        Whether or not the class-under-construction was declared as abstract (NOTE: this
-        property is usable even *before* the :class:`MetaOptionsFactory` has run)
+        Whether or not the class-under-construction was declared as abstract (**NOTE:**
+        this property is usable even *before* the :class:`MetaOptionsFactory` has run)
         """
         meta_value = getattr(self.clsdict.get('Meta'), 'abstract', False)
         return self.clsdict.get(ABSTRACT_ATTR, meta_value) is True
 
+    # we implement __iter__() to allow using the *args unpacking syntax
     def __iter__(self):
         return iter([self.mcs, self.name, self.bases, self.clsdict])
 
@@ -87,16 +88,33 @@ class MetaOption:
     """
     def __init__(self, name: str, default: Any = None, inherit: bool = False):
         self.name = name
-        self.default = default
-        self.inherit = inherit
-
-    def get_value(self, Meta: object, base_classes_meta, mcs_args: McsArgs) -> Any:
         """
-        :param Meta: the class Meta (if any) from the class-under-construction (NOTE:
-                     this is a plain object, NOT an instance of MetaOptionsFactory)
-        :param base_classes_meta: the MetaOptionsFactory instance (if any) from the
-                                  base class of the class-under-construction
-        :param mcs_args: the McsArgs for the class-under-construction
+        The attribute name of the option on class ``Meta`` objects.
+        """
+
+        self.default = default
+        """
+        The default value for this meta option.
+        """
+
+        self.inherit = inherit
+        """
+        Whether or not this option's value should be inherited from the class ``Meta``
+        of any base classes.
+        """
+
+    def get_value(self, Meta: Type[object], base_classes_meta, mcs_args: McsArgs) -> Any:
+        """
+        Returns the value for ``self.name`` given the class-under-construction's class
+        ``Meta``. If it's not found there, and ``self.inherit == True`` and there is a
+        base class that has a class ``Meta``, use that value, otherwise ``self.default``.
+
+        :param Meta: the class ``Meta`` (if any) from the class-under-construction
+                     (**NOTE:** this will be an ``object`` or ``None``, NOT an instance
+                     of :class:`MetaOptionsFactory`)
+        :param base_classes_meta: the :class:`MetaOptionsFactory` instance (if any) from
+                                  the base class of the class-under-construction
+        :param mcs_args: the :class:`McsArgs` for the class-under-construction
         """
         value = self.default
         if self.inherit and base_classes_meta is not None:
@@ -141,7 +159,7 @@ class AbstractMetaOption(MetaOption):
                 abstract = True
 
     In the latter case, we make sure to set the ``__abstract__`` class attribute
-    for backwards compatibility with libraries that do not understand Meta options.
+    for backwards compatibility with libraries that do not understand ``Meta`` options.
     """
     def __init__(self):
         super().__init__(name='abstract', default=False, inherit=False)
@@ -163,6 +181,12 @@ class AbstractMetaOption(MetaOption):
 
 
 class EnsureProtected(type):
+    """
+    Metaclass to ensure that all members (attributes and method names) of consumer classes
+    are protected (ie, prefixed with an ``_``).
+
+    Raises ``NameError`` if any public members are found.
+    """
     def __init__(cls, name, bases, clsdict):
         for attr in clsdict:
             if not attr.startswith('_'):
@@ -187,10 +211,14 @@ class MetaOptionsFactory(metaclass=EnsureProtected):
             def _get_meta_options(self):
                 return [AbstractMetaOption()]
 
-    IMPORTANT: If you add any attributes and/or methods to your factory subclass,
-    they *must* be protected (ie, prefixed with an `_` character).
+    **IMPORTANT:** If you add any attributes and/or methods to your factory subclass,
+    they *must* be protected (ie, prefixed with an ``_`` character).
     """
+
     _options = []
+    """
+    A list of :class:`MetaOption` subclasses (or instances) that this factory supports.
+    """
 
     def __init__(self):
         self._mcs_args = None
@@ -215,7 +243,7 @@ class MetaOptionsFactory(metaclass=EnsureProtected):
 
         Meta = mcs_args.clsdict.pop('Meta', None)
         base_classes_meta = deep_getattr(
-            mcs_args.clsdict, mcs_args.bases, 'Meta', None)
+            mcs_args.clsdict, mcs_args.bases, 'Meta', None)  # type: MetaOptionsFactory
 
         mcs_args.clsdict['Meta'] = self  # must come before _fill_from_meta, because
                                          # some meta options may depend upon having
@@ -384,12 +412,12 @@ def deep_getattr(clsdict: Dict[str, Any],
                  name: str,
                  default: Any = _missing) -> Any:
     """
-    Acts just like getattr would on a constructed class object, except this operates
-    on the pre-class-construction class dictionary and base classes. In other words,
-    first we look for the attribute in the class dictionary, and then we search all the
-    base classes (in method resolution order), finally returning the default value if
-    the attribute was not found in any of the class dictionary or base classes (or it
-    raises `AttributeError` if no default was given).
+    Acts just like ``getattr`` would on a constructed class object, except this operates
+    on the pre-construction class dictionary and base classes. In other words, first we
+    look for the attribute in the class dictionary, and then we search all the base
+    classes (in method resolution order), finally returning the default value if the
+    attribute was not found in any of the class dictionary or base classes (or it raises
+    ``AttributeError`` if no default was given).
     """
     value = clsdict.get(name, _missing)
     if value != _missing:
@@ -406,7 +434,15 @@ def deep_getattr(clsdict: Dict[str, Any],
 class OptionalMetaclass(type):
     """
     Use this as a generic base metaclass if you need to subclass a metaclass from
-    an optional package.
+    an optional package::
+
+        try:
+            from optional_dependency import SomeMetaclass
+        except ImportError:
+            from py_meta_utils import OptionalMetaclass as SomeMetaclass
+
+        class Optional(metaclass=SomeMetaclass):
+            pass
     """
 
     __optional_class = None
@@ -435,7 +471,7 @@ class OptionalMetaclass(type):
 class OptionalClass(metaclass=OptionalMetaclass):
     """
     Use this as a generic base class if you have classes that depend on an
-    optional package. For example::
+    optional package::
 
         try:
             from optional_dependency import SomeClass

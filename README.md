@@ -12,7 +12,7 @@ class EndUserClass(YourLoggableService):
         log_destination: str = '/tmp/end-user-class.log'
 ```
 
-The first step is to define your custom `MetaOption` subclasses:
+The first step is to define your custom [MetaOption](https://py-meta-utils.readthedocs.io/en/latest/api.html#py_meta_utils.MetaOption) subclasses:
 
 - All that's absolutely required to implement is the constructor and its `name` argument. That said, it's recommended to also specify the `default` and `inherit` arguments for the sake of being explicit.
 - The `check_value` method is optional, but useful for making sure your users aren't giving you garbage.
@@ -69,7 +69,7 @@ class LogDestinationMetaOption(MetaOption):
                              '`stderr`, or a valid filepath')
 ```
 
-The next step is to subclass `MetaOptionsFactory` and specify the `MetaOption` subclasses you want:
+The next step is to subclass [MetaOptionsFactory](https://py-meta-utils.readthedocs.io/en/latest/api.html#py_meta_utils.MetaOptionsFactory) and specify the [MetaOption](https://py-meta-utils.readthedocs.io/en/latest/api.html#py_meta_utils.MetaOption) subclasses you want:
 
 ```python
 class LoggingMetaOptionsFactory(MetaOptionsFactory):
@@ -80,7 +80,7 @@ class LoggingMetaOptionsFactory(MetaOptionsFactory):
     ]
 ```
 
-Then you need a metaclass to actually apply the factory:
+Then you need a metaclass to actually apply the factory options:
 
 ```python
 class LoggingMetaclass(type):
@@ -114,11 +114,11 @@ class YourLoggableService(metaclass=LoggingMetaclass):
                 f.write(msg)
 ```
 
-It's not immediately obvious from above, but the `Meta` attribute gets automatically added to classes having a metaclass that utilizes `apply_factory_meta_options`. (In this case, it will be populated with the default values as supplied by the `MetaOption` subclasses.) In the case where the class-under-construction (aka `YourLoggableService` in this example) has a partial `Meta` class, the missing meta options will be added to it.(*)
+It's not immediately obvious from above, but the `Meta` attribute gets automatically added to classes having a metaclass that utilizes [apply_factory_meta_options](https://py-meta-utils.readthedocs.io/en/latest/api.html#py_meta_utils.apply_factory_meta_options). (In this case, it will be populated with the default values as supplied by the [MetaOption](https://py-meta-utils.readthedocs.io/en/latest/api.html#py_meta_utils.MetaOption) subclasses.) In the case where the class-under-construction (aka `YourLoggableService` in this example) has a partial `Meta` class, the missing meta options will be added to it.(*)
 
-(*) In effect that's what happens, and for all practical purposes is probably how you should think about it, but technically speaking, the class-under-construction's `Meta` attribute actually gets replaced with a populated instance of the specified `MetaOptionsFactory` subclass.
+(*) In effect that's what happens, and for all practical purposes is probably how you should think about it, but technically speaking, the class-under-construction's `Meta` attribute actually gets replaced with a populated instance of the specified [MetaOptionsFactory](https://py-meta-utils.readthedocs.io/en/latest/api.html#py_meta_utils.MetaOptionsFactory) subclass.
 
-The one thing we didn't cover is `MetaOption.contribute_to_class`. This is an optional callback hook that allows `MetaOption` subclasses to, well, contribute something to the class-under-construction. Maybe it adds/removes attributes to/from the class, or it wraps some method(s) with a decorator, or something else entirely. 
+The one thing we didn't cover is `MetaOption.contribute_to_class`. This is an optional callback hook that allows `MetaOption` subclasses to, well, contribute something to the class-under-construction. Most likely it adds/removes attributes to/from the class, or perhaps it wraps some method(s) with a decorator or something else entirely. 
 
 ## Included Metaclass Utilities
 

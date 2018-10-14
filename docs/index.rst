@@ -21,11 +21,3 @@ Py-Meta-Utils
 
    introduction
    api
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

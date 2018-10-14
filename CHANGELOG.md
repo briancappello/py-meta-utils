@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.4.2 (unreleased)
+
+- clean up the documentation a bit
+
 ## 0.4.1 (2018/10/13)
 
 - add unit tests
