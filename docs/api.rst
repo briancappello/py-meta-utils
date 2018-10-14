@@ -49,10 +49,10 @@ apply_factory_meta_options
 Utility Classes
 ---------------
 
-EnsureProtected
-^^^^^^^^^^^^^^^
+EnsureProtectedMembers
+^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: py_meta_utils.EnsureProtected
+.. autoclass:: py_meta_utils.EnsureProtectedMembers
 
 Singleton
 ^^^^^^^^^

@@ -180,7 +180,7 @@ class AbstractMetaOption(MetaOption):
             mcs_args.clsdict[ABSTRACT_ATTR] = False
 
 
-class EnsureProtected(type):
+class EnsureProtectedMembers(type):
     """
     Metaclass to ensure that all members (attributes and method names) of consumer classes
     are protected (ie, prefixed with an ``_``).
@@ -196,7 +196,7 @@ class EnsureProtected(type):
         super().__init__(name, bases, clsdict)
 
 
-class MetaOptionsFactory(metaclass=EnsureProtected):
+class MetaOptionsFactory(metaclass=EnsureProtectedMembers):
     """
     Base class for meta options factory classes. Subclasses should either set
     :attr:`_options` to a list of :class:`MetaOption` subclasses (or instances)::
