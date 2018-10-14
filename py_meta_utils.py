@@ -57,7 +57,7 @@ class McsArgs:
         return self.name
 
     @property
-    def Meta(self) -> object:
+    def Meta(self) -> Type[object]:
         """
         Returns the class ``Meta`` from the class-under-construction.
 
@@ -241,7 +241,7 @@ class MetaOptionsFactory(metaclass=EnsureProtected):
         """
         self._mcs_args = mcs_args
 
-        Meta = mcs_args.clsdict.pop('Meta', None)
+        Meta = mcs_args.clsdict.pop('Meta', None)  # type: Type[object]
         base_classes_meta = deep_getattr(
             mcs_args.clsdict, mcs_args.bases, 'Meta', None)  # type: MetaOptionsFactory
 
@@ -254,7 +254,7 @@ class MetaOptionsFactory(metaclass=EnsureProtected):
             option_value = getattr(self, option.name, None)
             option.contribute_to_class(mcs_args, option_value)
 
-    def _fill_from_meta(self, Meta: object, base_classes_meta, mcs_args: McsArgs):
+    def _fill_from_meta(self, Meta: Type[object], base_classes_meta, mcs_args: McsArgs):
         """
         Iterate over our supported meta options, and set attributes on the factory
         instance (self) for each meta option's name/value. Raises ``TypeError`` if
