@@ -120,6 +120,31 @@ It's not immediately obvious from above, but the `Meta` attribute gets automatic
 
 The one thing we didn't cover is `MetaOption.contribute_to_class`. This is an optional callback hook that allows `MetaOption` subclasses to, well, contribute something to the class-under-construction. Most likely it adds/removes attributes to/from the class, or perhaps it wraps some method(s) with a decorator or something else entirely. 
 
+A good simple example can be found in the source code for the included [AbstractMetaOption](https://py-meta-utils.readthedocs.io/en/latest/api.html#py_meta_utils.AbstractMetaOption):
+
+```python
+ABSTRACT_ATTR = '__abstract__'
+
+
+class AbstractMetaOption(MetaOption):
+    def __init__(self):
+        super().__init__(name='abstract', default=False, inherit=False)
+
+    def get_value(self, Meta, base_classes_meta, mcs_args: McsArgs):
+        # class attributes take precedence over the class Meta's value
+        if mcs_args.clsdict.get(ABSTRACT_ATTR, False) is True:
+            return True
+        return super().get_value(Meta, base_classes_meta, mcs_args) is True
+
+    def contribute_to_class(self, mcs_args: McsArgs, value):
+        if value is True:
+            mcs_args.clsdict[ABSTRACT_ATTR] = True
+        else:
+            mcs_args.clsdict[ABSTRACT_ATTR] = False
+```
+
+A number of libraries use the `__abstract__` class attribute to determine whether or not the class-under-construction should be considered concrete or not, but they won't understand class `Meta` options. Therefore, we implement `MetaOption.contribute_to_class` to set the `__abstract__` class attribute to the appropriate value for backwards compatibility with such libraries.
+
 ## Included Metaclass Utilities
 
 ### Singleton

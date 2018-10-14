@@ -165,6 +165,7 @@ class AbstractMetaOption(MetaOption):
         super().__init__(name='abstract', default=False, inherit=False)
 
     def get_value(self, Meta, base_classes_meta, mcs_args: McsArgs):
+        # class attributes take precedence over the class Meta's value
         if mcs_args.clsdict.get(ABSTRACT_ATTR, False) is True:
             return True
         return super().get_value(Meta, base_classes_meta, mcs_args) is True
@@ -307,6 +308,8 @@ def apply_factory_meta_options(
         class YourMetaclass(type):
             def __new__(mcs, name, bases, clsdict):
                 mcs_args = McsArgs(mcs, name, bases, clsdict)
+
+                # apply_factory_meta_options must come *before* super().__new__()
                 apply_factory_meta_options(mcs_args, YourMetaOptionsFactory)
                 return super().__new__(*mcs_args)
 
