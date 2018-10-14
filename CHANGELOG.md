@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.5.0 (unreleased)
+## 0.5.0 (2018/10/14)
 
 - clean up the documentation a bit
 - update type hints for `Meta` to reflect that we pass around class objects, not instances
