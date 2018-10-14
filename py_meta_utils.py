@@ -289,7 +289,7 @@ class MetaOptionsFactory(metaclass=EnsureProtectedMembers):
                    for option in self._get_meta_options()})
 
 
-def apply_factory_meta_options(
+def process_factory_meta_options(
         mcs_args: McsArgs,
         default_factory_class: Type[MetaOptionsFactory] = MetaOptionsFactory,
         factory_attr_name: str = META_OPTIONS_FACTORY_CLASS_ATTR_NAME) \
@@ -298,7 +298,7 @@ def apply_factory_meta_options(
     Main entry point for consumer metaclasses. Usage::
 
         from py_meta_utils import (AbstractMetaOption, McsArgs, MetaOptionsFactory,
-                                   apply_factory_meta_options)
+                                   process_factory_meta_options)
 
 
         class YourMetaOptionsFactory(MetaOptionsFactory):
@@ -309,8 +309,8 @@ def apply_factory_meta_options(
             def __new__(mcs, name, bases, clsdict):
                 mcs_args = McsArgs(mcs, name, bases, clsdict)
 
-                # apply_factory_meta_options must come *before* super().__new__()
-                apply_factory_meta_options(mcs_args, YourMetaOptionsFactory)
+                # process_factory_meta_options must come *before* super().__new__()
+                process_factory_meta_options(mcs_args, YourMetaOptionsFactory)
                 return super().__new__(*mcs_args)
 
 

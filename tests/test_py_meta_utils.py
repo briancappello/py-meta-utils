@@ -1,7 +1,7 @@
 import pytest
 
 from py_meta_utils import (McsArgs, MetaOption, AbstractMetaOption, MetaOptionsFactory,
-                           apply_factory_meta_options, Singleton, SubclassableSingleton,
+                           process_factory_meta_options, Singleton, SubclassableSingleton,
                            deep_getattr, OptionalMetaclass, OptionalClass)
 
 

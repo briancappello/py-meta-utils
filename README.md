@@ -25,7 +25,7 @@ import sys
 
 # first we have to import what we need from py_meta_utils
 from py_meta_utils import (McsArgs, MetaOption, MetaOptionsFactory,
-                           apply_factory_meta_options, _missing)
+                           process_factory_meta_options, _missing)
 
 # then we have to declare the meta options the meta options factory should support
 class DebugMetaOption(MetaOption):
@@ -86,7 +86,7 @@ Then you need a metaclass to actually apply the factory options:
 class LoggingMetaclass(type):
     def __new__(mcs, name, bases, clsdict):
         mcs_args = McsArgs(mcs, name, bases, clsdict)
-        apply_factory_meta_options(mcs_args, LoggingMetaOptionsFactory)
+        process_factory_meta_options(mcs_args, LoggingMetaOptionsFactory)
         return super().__new__(*mcs_args)
 ```
 
@@ -114,7 +114,7 @@ class YourLoggableService(metaclass=LoggingMetaclass):
                 f.write(msg)
 ```
 
-It's not immediately obvious from above, but the `Meta` attribute gets automatically added to classes having a metaclass that utilizes [apply_factory_meta_options](https://py-meta-utils.readthedocs.io/en/latest/api.html#py_meta_utils.apply_factory_meta_options). (In this case, it will be populated with the default values as supplied by the [MetaOption](https://py-meta-utils.readthedocs.io/en/latest/api.html#py_meta_utils.MetaOption) subclasses.) In the case where the class-under-construction (aka `YourLoggableService` in this example) has a partial `Meta` class, the missing meta options will be added to it.(*)
+It's not immediately obvious from above, but the `Meta` attribute gets automatically added to classes having a metaclass that utilizes [process_factory_meta_options](https://py-meta-utils.readthedocs.io/en/latest/api.html#py_meta_utils.process_factory_meta_options). (In this case, it will be populated with the default values as supplied by the [MetaOption](https://py-meta-utils.readthedocs.io/en/latest/api.html#py_meta_utils.MetaOption) subclasses.) In the case where the class-under-construction (aka `YourLoggableService` in this example) has a partial `Meta` class, the missing meta options will be added to it.(*)
 
 (*) In effect that's what happens, and for all practical purposes is probably how you should think about it, but technically speaking, the class-under-construction's `Meta` attribute actually gets replaced with a populated instance of the specified [MetaOptionsFactory](https://py-meta-utils.readthedocs.io/en/latest/api.html#py_meta_utils.MetaOptionsFactory) subclass.
 

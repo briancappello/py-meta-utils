@@ -1,10 +1,11 @@
 # CHANGELOG
 
-## 0.4.2 (unreleased)
+## 0.5.0 (unreleased)
 
 - clean up the documentation a bit
 - update type hints for `Meta` to reflect that we pass around class objects, not instances
 - rename `EnsureProtected` to `EnsureProtectedMembers`
+- rename `apply_factory_meta_options` to `process_factory_meta_options`
 
 ## 0.4.1 (2018/10/13)
 

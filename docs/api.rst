@@ -41,10 +41,10 @@ MetaOptionsFactory
 .. autoclass:: py_meta_utils.MetaOptionsFactory
    :members: _options, _get_meta_options, _contribute_to_class, _fill_from_meta
 
-apply_factory_meta_options
---------------------------
+process_factory_meta_options
+----------------------------
 
-.. autofunction:: py_meta_utils.apply_factory_meta_options
+.. autofunction:: py_meta_utils.process_factory_meta_options
 
 Utility Classes
 ---------------
