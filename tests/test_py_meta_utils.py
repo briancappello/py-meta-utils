@@ -214,6 +214,10 @@ class TestDeepGetattr:
         assert deep_getattr({}, (Hi,), 'hi') == 'hello'
         assert deep_getattr({}, (object, Hi), 'hi') == 'hello'
 
+    def test_clsdict_takes_precedence_over_bases(self):
+        Base = type('Base', (), {'hi': 'from base'})
+        assert deep_getattr({'hi': 'from clsdict'}, (Base,), 'hi') == 'from clsdict'
+
     def test_default(self):
         assert deep_getattr({}, (), 'nope', 'default') == 'default'
 
