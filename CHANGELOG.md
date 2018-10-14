@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.5.1 (2018/10/14)
+
+- fix markdown readme on PyPI
+
 ## 0.5.0 (2018/10/14)
 
 - clean up the documentation a bit
