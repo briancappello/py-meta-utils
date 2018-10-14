@@ -100,7 +100,7 @@ class TestAbstractMetaOption:
 
 class TestMetaOptionsFactory:
     def test_it_requires_protected_attributes(self):
-        with pytest.raises(Exception) as e:
+        with pytest.raises(NameError) as e:
             class Foo(MetaOptionsFactory):
                 def fail(self):
                     pass
