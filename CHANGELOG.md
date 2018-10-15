@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.5.2 (unreleased)
+
+- add `McsArgs.getattr(name[, default])` convenience method
+
 ## 0.5.1 (2018/10/14)
 
 - fix markdown readme on PyPI

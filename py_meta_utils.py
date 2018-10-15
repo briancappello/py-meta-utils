@@ -39,6 +39,13 @@ class McsArgs:
         self.bases = bases
         self.clsdict = clsdict
 
+    def getattr(self, name, default: Any = _missing):
+        """
+        Convenience method equivalent to
+        ``deep_getattr(mcs_args.clsdict, mcs_args.bases, 'attr_name'[, default])``
+        """
+        return deep_getattr(self.clsdict, self.bases, name, default)
+
     @property
     def module(self) -> Union[str, None]:
         """
@@ -240,8 +247,7 @@ class MetaOptionsFactory(metaclass=EnsureProtectedMembers):
         self._mcs_args = mcs_args
 
         Meta = mcs_args.clsdict.pop('Meta', None)  # type: Type[object]
-        base_classes_meta = deep_getattr(
-            mcs_args.clsdict, mcs_args.bases, 'Meta', None)  # type: MetaOptionsFactory
+        base_classes_meta = mcs_args.getattr('Meta', None)  # type: MetaOptionsFactory
 
         mcs_args.clsdict['Meta'] = self  # must come before _fill_from_meta, because
                                          # some meta options may depend upon having
@@ -346,8 +352,7 @@ def process_factory_meta_options(
                               meta options class on the class-under-construction
     :return: The populated instance of the factory class
     """
-    factory_cls = deep_getattr(
-        mcs_args.clsdict, mcs_args.bases,
+    factory_cls = mcs_args.getattr(
         factory_attr_name or META_OPTIONS_FACTORY_CLASS_ATTR_NAME,
         default_factory_class)
     options_factory = factory_cls()
