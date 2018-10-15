@@ -175,10 +175,7 @@ class AbstractMetaOption(MetaOption):
             raise TypeError('The abstract Meta option must be either True or False')
 
     def contribute_to_class(self, mcs_args: McsArgs, value):
-        if value is True:
-            mcs_args.clsdict[ABSTRACT_ATTR] = True
-        else:
-            mcs_args.clsdict[ABSTRACT_ATTR] = False
+        mcs_args.clsdict[ABSTRACT_ATTR] = True if value is True else False
 
 
 class EnsureProtectedMembers(type):
