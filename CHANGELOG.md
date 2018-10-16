@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.6.1 (unreleased)
+## 0.6.1 (2018/10/16)
 
 - add more tests for `Singleton`, fix bugs in implementation
 
