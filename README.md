@@ -163,28 +163,22 @@ instance = YourSingleton()
 assert instance == YourSingleton()
 ```
 
-### SubclassableSingleton
-
-`SubclassableSingleton` is an included metaclass that makes any class hierarchy utilizing it a singleton (you will always get the same instance of the most-derived subclass):
+Classes using `Singleton` can be subclassed, however, you must inform the base class of your subclass:
 
 ```python
-from py_meta_utils import SubclassableSingleton
+from py_meta_utils import Singleton
 
-
-class BaseSingleton(metaclass=SubclassableSingleton):
+class BaseSingleton(metaclass=Singleton):
     pass
-
 
 class Extended(BaseSingleton):
     pass
 
-
+BaseSingleton.set_singleton_class(Extended)
 base_instance = BaseSingleton()
 extended_instance = Extended()
 assert base_instance == extended_instance == BaseSingleton() == Extended()
 ```
-
-Note that in practice, any subclasses must be imported *before* any calls to the base class(es) are made, otherwise you will not get the correct subclass.
 
 ### deep_getattr
 

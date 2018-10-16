@@ -59,11 +59,6 @@ Singleton
 
 .. autoclass:: py_meta_utils.Singleton
 
-SubclassableSingleton
-^^^^^^^^^^^^^^^^^^^^^
-
-.. autoclass:: py_meta_utils.SubclassableSingleton
-
 OptionalClass
 ^^^^^^^^^^^^^
 

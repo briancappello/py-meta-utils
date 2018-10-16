@@ -1,8 +1,9 @@
 # CHANGELOG
 
-## 0.5.2 (unreleased)
+## 0.6.0 (unreleased)
 
 - add `McsArgs.getattr(name[, default])` convenience method
+- refactor `Singleton` to support specifying the class to use, drop `SubclassableSingleton`
 
 ## 0.5.1 (2018/10/14)
 

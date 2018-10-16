@@ -360,6 +360,30 @@ def process_factory_meta_options(
     return options_factory
 
 
+class _SingletonClassDescriptor:
+    _cls = None
+
+    def __get__(self, cls, mcs):
+        if self._cls is None:
+            self._cls = cls
+        return self._cls
+
+    def __set__(self, cls, value):
+        if cls._instance:
+            return  # too late!
+        self._cls = value
+
+
+class _SingletonInstanceDescriptor:
+    _instance = None
+
+    def __get__(self, cls, mcs):
+        return self._instance
+
+    def __set__(self, cls, value):
+        self._instance = value
+
+
 class Singleton(type):
     """
     A metaclass that makes a consumer class a singleton::
@@ -372,44 +396,29 @@ class Singleton(type):
         foo = Foo()
         assert foo == Foo() == Foo()  # True
 
-    Note that if you subclass Foo, your subclass will also be a singleton, however,
-    a separate one from Foo. If instead you always want the most-derived subclass,
-    you should use :class:`SubclassableSingleton`.
-    """
+    Note that if you subclass a singleton, then you must inform the base class::
 
-    _instances = {}
+        Foo.set_singleton_class(YourFooSubclass)
 
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super().__call__(*args, **kwargs)
-        return cls._instances[cls]
-
-
-class SubclassableSingleton(Singleton):
-    """
-    A metaclass that makes a consumer class (and any subclasses of it) a singleton,
-    always returning the most-derived subclass. For example::
-
-        from py_meta_utils import SubclassableSingleton
-
-        class Foo(metaclass=SubclassableSingleton):
-            pass
-
-        class Bar(Foo):
-            pass
+    This way, calling ``Foo()`` will still return the same instance of ``YourFooSubclass``
+    as if calling ``YourFooSubclass()`` itself::
 
         foo = Foo()
-        bar = Bar()
-        assert foo == bar == Foo() == Bar()  # True
-
-    Note that in practice, any subclasses must be imported *before* any calls to
-    the base class(es) are made, otherwise you will not get the correct subclass.
+        sub = YourFooSubclass()
+        assert foo == sub == Foo() == YourFooSubclass()
     """
 
+    _cls = _SingletonClassDescriptor()
+    _instance = _SingletonInstanceDescriptor()
+
+    def set_singleton_class(self, cls):
+        self._cls = cls
+
     def __call__(cls, *args, **kwargs):
-        while cls.__subclasses__():
-            cls = cls.__subclasses__()[0]
-        return super().__call__(*args, **kwargs)
+        if cls._instance is None:
+            cls = cls._cls
+            cls._instance = super().__call__(*args, **kwargs)
+        return cls._instance
 
 
 def deep_getattr(clsdict: Dict[str, Any],
