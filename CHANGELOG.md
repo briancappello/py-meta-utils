@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.6.1 (unreleased)
+
+- add more tests for `Singleton`, fix bugs in implementation
+
 ## 0.6.0 (2018/10/16)
 
 - add `McsArgs.getattr(name[, default])` convenience method

@@ -360,30 +360,6 @@ def process_factory_meta_options(
     return options_factory
 
 
-class _SingletonClassDescriptor:
-    _cls = None
-
-    def __get__(self, cls, mcs):
-        if self._cls is None:
-            self._cls = cls
-        return self._cls
-
-    def __set__(self, cls, value):
-        if cls._instance:
-            return  # too late!
-        self._cls = value
-
-
-class _SingletonInstanceDescriptor:
-    _instance = None
-
-    def __get__(self, cls, mcs):
-        return self._instance
-
-    def __set__(self, cls, value):
-        self._instance = value
-
-
 class Singleton(type):
     """
     A metaclass that makes a consumer class a singleton::
@@ -408,17 +384,28 @@ class Singleton(type):
         assert foo == sub == Foo() == YourFooSubclass()
     """
 
-    _cls = _SingletonClassDescriptor()
-    _instance = _SingletonInstanceDescriptor()
+    _classes = {}
+    _instances = {}
 
     def set_singleton_class(self, cls):
-        self._cls = cls
+        if self in self._classes:
+            from warnings import warn
+            warn('An instance of this singleton has already been created! Please set '
+                 'the class you wish to use earlier.', UserWarning)
+            return
+
+        for base in self.__mro__:
+            self._classes[base] = cls
+        self._classes[cls] = cls
 
     def __call__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls = cls._cls
-            cls._instance = super().__call__(*args, **kwargs)
-        return cls._instance
+        if cls not in cls._classes:
+            cls.set_singleton_class(cls)
+
+        cls = cls._classes[cls]
+        if cls not in cls._instances:
+            cls._instances[cls] = super().__call__(*args, **kwargs)
+        return cls._instances[cls]
 
 
 def deep_getattr(clsdict: Dict[str, Any],

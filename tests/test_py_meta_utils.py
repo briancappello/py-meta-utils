@@ -1,8 +1,9 @@
 import pytest
 
 from py_meta_utils import (McsArgs, MetaOption, AbstractMetaOption, MetaOptionsFactory,
-                           process_factory_meta_options, Singleton, SubclassableSingleton,
+                           process_factory_meta_options, Singleton,
                            deep_getattr, OptionalMetaclass, OptionalClass)
+from warnings import WarningMessage
 
 
 class TestMcsArgs:
@@ -186,23 +187,67 @@ def test_singleton():
 
     single = Single()
     assert single == Single()
+    assert isinstance(single, Single) and not isinstance(single, Second)
 
     second = Second()
     assert second == Second()
-
     assert single != second
+    assert isinstance(second, Second)
 
 
-def test_subclassable_singleton():
-    class Base(metaclass=SubclassableSingleton):
+def test_singleton_subclassable():
+    class Single(metaclass=Singleton):
         pass
 
-    class Extended(Base):
+    class Second(Single):
         pass
 
-    base = Base()
-    extended = Extended()
-    assert base == extended == Base() == Extended()
+    Single.set_singleton_class(Second)
+
+    single = Single()
+    assert single == Single()
+    assert isinstance(single, Second)
+
+    second = Second()
+    assert single == second == Second()
+
+    class Third(Second):
+        pass
+
+    with pytest.warns(UserWarning) as warnings:
+        Single.set_singleton_class(Third)
+    assert 'An instance of this singleton has already been created! Please set ' \
+           'the class you wish to use earlier.' in warnings[0].message.args[0]
+
+    with pytest.warns(UserWarning) as warnings:
+        Second.set_singleton_class(Third)
+    assert 'An instance of this singleton has already been created! Please set ' \
+           'the class you wish to use earlier.' in warnings[0].message.args[0]
+
+
+def test_singleton_subsubclassable():
+    class Single(metaclass=Singleton):
+        pass
+
+    class Second(Single):
+        pass
+
+    class Third(Second):
+        pass
+
+    Second.set_singleton_class(Third)
+
+    single = Single()
+    assert isinstance(single, Third)
+    assert single == Single()
+
+    second = Second()
+    assert isinstance(second, Third)
+    assert single == second == Second()
+
+    third = Third()
+    assert isinstance(third, Third)
+    assert single == second == third == Third()
 
 
 class TestDeepGetattr:
