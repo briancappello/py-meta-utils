@@ -1,5 +1,11 @@
 # Py Meta Utils
 
+## Useful Links
+
+* [Official Documentation on Read The Docs](http://py-meta-utils.readthedocs.io/)
+* [Source Code on GitHub](https://github.com/briancappello/py-meta-utils)
+* [PyPI](https://pypi.org/project/Py-Meta-Utils/)
+
 ## The Meta Options Factory Pattern as a library, and related metaclass utilities
 
 OK, but just what is the Meta options factory pattern? Perhaps the easiest way to explain it is to start with an example. Let's say you wanted your end users to be able to optionally enable logging of the actions of a class from a library you're writing:
@@ -86,7 +92,12 @@ Then you need a metaclass to actually apply the factory options:
 class LoggingMetaclass(type):
     def __new__(mcs, name, bases, clsdict):
         mcs_args = McsArgs(mcs, name, bases, clsdict)
-        process_factory_meta_options(mcs_args, LoggingMetaOptionsFactory)
+        factory_cls = mcs_args.getattr('_meta_options_factory_class',
+                                       LoggingMetaOptionsFactory)
+        options_factory = factory_cls()
+        options_factory._contribute_to_class(mcs_args)
+        # the above three lines can be replaced by:
+        # process_factory_meta_options(mcs_args, LoggingMetaOptionsFactory)
         return super().__new__(*mcs_args)
 ```
 
@@ -114,7 +125,7 @@ class YourLoggableService(metaclass=LoggingMetaclass):
                 f.write(msg)
 ```
 
-It's not immediately obvious from above, but the `Meta` attribute gets automatically added to classes having a metaclass that utilizes [process_factory_meta_options](https://py-meta-utils.readthedocs.io/en/latest/api.html#py_meta_utils.process_factory_meta_options). (In this case, it will be populated with the default values as supplied by the [MetaOption](https://py-meta-utils.readthedocs.io/en/latest/api.html#py_meta_utils.MetaOption) subclasses.) In the case where the class-under-construction (aka `YourLoggableService` in this example) has a partial `Meta` class, the missing meta options will be added to it.(*)
+The options factory automatically adds the `Meta` attribute to the class-under-construction (in this example, `YourLoggableService`). (In this case the `Meta` attribute will be populated with the default values as supplied by the [MetaOption](https://py-meta-utils.readthedocs.io/en/latest/api.html#py_meta_utils.MetaOption) subclasses specified by the factory.) In the case where the class-under-construction has a partial `Meta` class, the missing meta options will be added to it.(*)
 
 (*) In effect that's what happens, and for all practical purposes is probably how you should think about it, but technically speaking, the class-under-construction's `Meta` attribute actually gets replaced with a populated instance of the specified [MetaOptionsFactory](https://py-meta-utils.readthedocs.io/en/latest/api.html#py_meta_utils.MetaOptionsFactory) subclass.
 
@@ -149,7 +160,7 @@ A number of libraries use the `__abstract__` class attribute to determine whethe
 
 ### Singleton
 
-`Singleton` is an included metaclass that makes any class utilizing it a singleton:
+[Singleton](http://localhost:8000/api.html#singleton) is an included metaclass that makes any class utilizing it a singleton:
 
 ```python
 from py_meta_utils import Singleton
@@ -163,7 +174,7 @@ instance = YourSingleton()
 assert instance == YourSingleton()
 ```
 
-Classes using `Singleton` can be subclassed, however, you must inform the base class of your subclass:
+Classes using [Singleton](http://localhost:8000/api.html#singleton) can be subclassed, however, you must inform the base class of your subclass:
 
 ```python
 from py_meta_utils import Singleton
@@ -182,7 +193,12 @@ assert base_instance == extended_instance == BaseSingleton() == Extended()
 
 ### deep_getattr
 
-`deep_getattr` acts just like `getattr` would on a constructed class object, except this operates on the pre-class-construction class dictionary and base classes. In other words, first we look for the attribute in the class dictionary, and then we search all the base classes (in method resolution order), finally returning the default value if the attribute was not found in any of the class dictionary or base classes (or it raises `AttributeError` if no default was given).
+```python
+deep_getattr(clsdict, bases, 'attr_name', [default])
+```
+
+`deep_getattr` acts just like `getattr` would on a constructed class object, except this operates on the pre-class-construction class dictionary and base classes. In other words, first we look for the attribute in the class dictionary, and then we search all the base classes (in method resolution order), finally returning the default value if the attribute was not found in any of the class dictionary or base classes (or it raises `AttributeError` if `default` not given).
+
 
 ### OptionalMetaclass and OptionalClass
 
