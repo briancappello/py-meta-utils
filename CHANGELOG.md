@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.6.2 (unreleased)
+## 0.6.2 (2018/10/21)
 
 - implement `__bool__` and `__contains__` on `OptionalClass`
 
