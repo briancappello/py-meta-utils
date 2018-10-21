@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.6.2 (unreleased)
+
+- implement `__bool__` and `__contains__` on `OptionalClass`
+
 ## 0.6.1 (2018/10/16)
 
 - add more tests for `Singleton`, fix bugs in implementation

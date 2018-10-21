@@ -468,6 +468,12 @@ class OptionalMetaclass(type):
     def __setitem__(self, key, value):
         pass
 
+    def __bool__(self):
+        return False
+
+    def __contains__(self, item):
+        return False
+
 
 class OptionalClass(metaclass=OptionalMetaclass):
     """
