@@ -400,7 +400,7 @@ class Singleton(type):
 
     def __call__(cls, *args, **kwargs):
         if cls not in cls._classes:
-            cls.set_singleton_class(cls)
+            cls._classes[cls] = cls
 
         cls = cls._classes[cls]
         if cls not in cls._instances:

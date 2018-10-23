@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.7.0 (unreleased)
+
+- `Singleton.set_singleton_class` must always be called explicitly (fixes bug when instantiating a subclass before the base class and you want the base class to be an instance of itself, not the subclass)
+
 ## 0.6.2 (2018/10/21)
 
 - implement `__bool__` and `__contains__` on `OptionalClass`
