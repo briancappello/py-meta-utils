@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.7.1 (2018/10/23)
+
+- Add test for the `Singleton` bug fixed in 0.7.0
+
 ## 0.7.0 (2018/10/23)
 
 - `Singleton.set_singleton_class` must always be called explicitly (fixes bug when instantiating a subclass before the base class and you want the base class to be an instance of itself, not the subclass)

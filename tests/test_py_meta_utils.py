@@ -225,6 +225,29 @@ def test_singleton_subclassable():
            'the class you wish to use earlier.' in warnings[0].message.args[0]
 
 
+def test_singleton_subclassable_without_set_is_instantiation_order_independent():
+    class Single(metaclass=Singleton):
+        pass
+
+    class Second(Single):
+        pass
+
+    class Third(Second):
+        pass
+
+    third = Third()
+    assert third == Third()
+    assert isinstance(third, Third)
+
+    second = Second()
+    assert second == Second()
+    assert isinstance(second, Second) and not isinstance(second, Third)
+
+    single = Single()
+    assert single == Single()
+    assert isinstance(single, Single) and not isinstance(single, Second)
+
+
 def test_singleton_subsubclassable():
     class Single(metaclass=Singleton):
         pass
