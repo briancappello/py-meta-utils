@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.7.2 (unreleased)
+## 0.7.2 (2018/10/28)
 
 - add support for allowing public properties on consumer classes of the `EnsureProtectedMembers` metaclass
 - add tests for the `EnsureProtectedMembers` metaclass
