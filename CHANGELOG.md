@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.7.3 (unreleased)
+## 0.7.3 (2018/10/28)
 
 - fix bug in `MetaOptionsFactory._fill_from_meta` when using `_allowed_properties`
 
