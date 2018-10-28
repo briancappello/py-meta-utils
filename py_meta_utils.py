@@ -284,8 +284,11 @@ class MetaOptionsFactory(metaclass=EnsureProtectedMembers):
                                           if not k.startswith('_')}
 
         for option in self._get_meta_options():
-            assert not hasattr(self, option.name), \
-                "Can't override field {name}.".format(name=option.name)
+            existing = getattr(self, option.name, None)
+            if existing and not (existing in self._allowed_properties
+                                 and not isinstance(existing, property)):
+                raise RuntimeError("Can't override field {name}."
+                                   "".format(name=option.name))
             value = option.get_value(Meta, base_classes_meta, mcs_args)
             option.check_value(value, mcs_args)
             meta_attrs.pop(option.name, None)

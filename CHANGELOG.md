@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.7.3 (unreleased)
+
+- fix bug in `MetaOptionsFactory._fill_from_meta` when using `_allowed_properties`
+
 ## 0.7.2 (2018/10/28)
 
 - add support for allowing public properties on consumer classes of the `EnsureProtectedMembers` metaclass
