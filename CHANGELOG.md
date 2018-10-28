@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.7.2 (unreleased)
+
+- add support for allowing public properties on consumer classes of the `EnsureProtectedMembers` metaclass
+- add tests for the `EnsureProtectedMembers` metaclass
+
 ## 0.7.1 (2018/10/23)
 
 - Add test for the `Singleton` bug fixed in 0.7.0

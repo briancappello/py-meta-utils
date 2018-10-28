@@ -1,9 +1,7 @@
 import pytest
 
 from py_meta_utils import (McsArgs, MetaOption, AbstractMetaOption, MetaOptionsFactory,
-                           process_factory_meta_options, Singleton,
-                           deep_getattr, OptionalMetaclass, OptionalClass)
-from warnings import WarningMessage
+                           EnsureProtectedMembers, Singleton, deep_getattr)
 
 
 class TestMcsArgs:
@@ -176,6 +174,33 @@ class TestMetaOptionsFactory:
         assert foo.one == 1
         assert foo.two == 2
         assert foo.three == 3
+
+
+class TestEnsureProtectedMembers:
+    def test_it_works(self):
+        with pytest.raises(NameError) as e:
+            class HasPublicMembers(metaclass=EnsureProtectedMembers):
+                def should_not_be_allowed(self):
+                    raise Exception
+
+        assert 'HasPublicMembers.should_not_be_allowed must be protected' in str(e)
+
+    def test_it_allows_public_properties(self):
+        class HasPublicProperties(metaclass=EnsureProtectedMembers):
+            _allowed_properties = ['allowed']
+
+            def __init__(self):
+                self._allowed = True
+
+            @property
+            def allowed(self):
+                return self._allowed
+
+            @allowed.setter
+            def allowed(self, allowed):
+                self._allowed = allowed
+
+        assert HasPublicProperties().allowed is True
 
 
 def test_singleton():

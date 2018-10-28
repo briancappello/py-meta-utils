@@ -187,14 +187,23 @@ class AbstractMetaOption(MetaOption):
 
 class EnsureProtectedMembers(type):
     """
-    Metaclass to ensure that all members (attributes and method names) of consumer classes
-    are protected (ie, prefixed with an ``_``).
+    Metaclass to ensure that all members (attributes and method names) of consumer
+    classes are protected (ie, prefixed with an ``_``).
 
-    Raises ``NameError`` if any public members are found.
+    Consumer classes may have an `_allowed_properties` class attribute set to
+    a list of allowed public properties.
+
+    Raises ``NameError`` if any public members not in `cls._allowed_properties`
+    are found.
     """
     def __init__(cls, name, bases, clsdict):
-        for attr in clsdict:
+        allowed_props = set(getattr(cls, '_allowed_properties', ()))
+
+        for attr, value in clsdict.items():
             if not attr.startswith('_'):
+                if attr in allowed_props and isinstance(value, property):
+                    continue
+
                 raise NameError('{cls}.{attr} must be protected '
                                 '(rename to {cls}._{attr})'.format(cls=name,
                                                                    attr=attr))
@@ -218,6 +227,11 @@ class MetaOptionsFactory(metaclass=EnsureProtectedMembers):
 
     **IMPORTANT:** If you add any attributes and/or methods to your factory subclass,
     they *must* be protected (ie, prefixed with an ``_`` character).
+    """
+
+    _allowed_properties = []
+    """
+    A list of public properties to allow on this factory.
     """
 
     _options = []
