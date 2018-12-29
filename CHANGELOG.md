@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.7.4 (unreleased)
+## 0.7.4 (2018/12/29)
 
 - add `MetaOptionsFactory._to_clsdict()` method
 
