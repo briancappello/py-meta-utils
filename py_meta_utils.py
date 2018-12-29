@@ -302,6 +302,15 @@ class MetaOptionsFactory(metaclass=EnsureProtectedMembers):
                     cls=mcs_args.name,
                     attrs=', '.join(sorted(meta_attrs.keys()))))
 
+    def _to_clsdict(self):
+        return dict(**{option.name: getattr(self, option.name)
+                       for option in self._get_meta_options()
+                       if option.name != '_'},
+                    **{'_mcs_args': self._mcs_args,
+                       '__module__': self._mcs_args.qualname,
+                       },
+                    )
+
     def __repr__(self):
         return '{cls}(options={attrs!r})'.format(
             cls=self.__class__.__name__,

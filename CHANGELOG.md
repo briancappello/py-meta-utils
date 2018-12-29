@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.7.4 (unreleased)
+
+- add `MetaOptionsFactory._to_clsdict()` method
+
 ## 0.7.3 (2018/10/28)
 
 - fix bug in `MetaOptionsFactory._fill_from_meta` when using `_allowed_properties`
