@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.7.5 (unreleased)
+
+- fix project name on PyPI having spaces
+
 ## 0.7.4 (2018/12/29)
 
 - add `MetaOptionsFactory._to_clsdict()` method

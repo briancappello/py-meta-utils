@@ -6,7 +6,7 @@ with open('README.md', encoding='utf-8') as f:
 
 
 setup(
-    name='Py Meta Utils',
+    name='Py-Meta-Utils',
     version='0.7.4',
     description='Metaclass utilities for Python',
     long_description=long_description,
