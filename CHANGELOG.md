@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.7.5 (unreleased)
+## 0.7.5 (2019/02/25)
 
 - fix project name on PyPI having spaces
 
