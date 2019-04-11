@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.7.6 (unreleased)
+## 0.7.6 (2019/04/11)
 
 - propagate `__classcell__` to `type.__new__` in `OptionalMetaclass.__new__`
 
