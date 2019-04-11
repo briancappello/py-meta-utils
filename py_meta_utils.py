@@ -475,7 +475,7 @@ class OptionalMetaclass(type):
     __optional_class = None
 
     def __new__(mcs, name, bases, clsdict):
-        if mcs.__optional_class is None:
+        if mcs.__optional_class is None or '__classcell__' in clsdict:
             mcs.__optional_class = super().__new__(mcs, name, bases, clsdict)
         return mcs.__optional_class
 

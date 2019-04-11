@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.7.6 (unreleased)
+
+- propagate `__classcell__` to `type.__new__` in `OptionalMetaclass.__new__`
+
 ## 0.7.5 (2019/02/25)
 
 - fix project name on PyPI having spaces
