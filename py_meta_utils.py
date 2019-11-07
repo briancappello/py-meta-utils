@@ -426,6 +426,7 @@ class Singleton(type):
     as if calling ``YourFooSubclass()`` itself::
 
         foo = Foo()
+        assert isinstance(foo, YourFooSubclass)
         sub = YourFooSubclass()
         assert foo == sub == Foo() == YourFooSubclass()
     """
