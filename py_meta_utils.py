@@ -496,8 +496,7 @@ class OptionalMetaclass(type):
     __optional_class = None
 
     def __new__(mcs, name, bases, clsdict):
-        if mcs.__optional_class is None:
-            mcs.__optional_class = super().__new__(mcs, name, bases, clsdict)
+        mcs.__optional_class = super().__new__(mcs, name, bases, clsdict)
         return mcs.__optional_class
 
     def __getattr__(self, item):
