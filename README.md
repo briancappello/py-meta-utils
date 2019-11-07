@@ -8,7 +8,23 @@
 
 ## The Meta Options Factory Pattern as a library, and related metaclass utilities
 
-OK, but just what is the Meta options factory pattern? Perhaps the easiest way to explain it is to start with an example. Let's say you wanted your end users to be able to optionally enable logging of the actions of a class from a library you're writing:
+When you as a library or framework author want your end users to be able to write something like this:
+
+```python
+class SomeClass(YourBaseClass):
+    class Meta:
+        option1 = 'value1'
+        option2 = 'value2'
+        option3 = 'value3'
+```
+
+And you need a way to define each of these option/value pairs, and a way to "attach" custom behavior to them (ie, code that manipulates code using a custom `metaclass` on `YourBaseClass`). There are a couple common-ish patterns to accomplish this. Django and Graphene have one way, Marshmallow another, and Factory Boy another (and no doubt probably others). But Factory Boy's implementation is by far the most powerful and flexible one I've come across.
+
+I discovered this pattern while reading the source code of [factory_boy](https://factoryboy.readthedocs.io/en/latest/) (specifically, [this file](https://github.com/FactoryBoy/factory_boy/blob/master/factory/base.py)).
+
+And I decided to extract it and turn it into a reusable library. In the process, I ended up refactoring a few things and adding a couple niceties to improve upon its usage.
+
+Let's take a look at a silly example to allow your end users to be able to optionally enable logging of the actions of a class from a library you're writing:
 
 ```python
 class EndUserClass(YourLoggableService):
@@ -66,11 +82,11 @@ class LogDestinationMetaOption(MetaOption):
             return
 
         try:
-            valid_dir = os.path.exists(os.path.dirname(value))
-        except Exception:
-            valid_dir = False
+            dir_exists = os.path.exists(os.path.dirname(value))
+        except:
+            dir_exists = False
 
-        if not valid_dir:
+        if not dir_exists:
             raise ValueError(f'The {self.name} Meta option must be one of `stdout`, '
                              '`stderr`, or a valid filepath')
 ```
@@ -92,12 +108,7 @@ Then you need a metaclass to actually apply the factory options:
 class LoggingMetaclass(type):
     def __new__(mcs, name, bases, clsdict):
         mcs_args = McsArgs(mcs, name, bases, clsdict)
-        factory_cls = mcs_args.getattr('_meta_options_factory_class',
-                                       LoggingMetaOptionsFactory)
-        options_factory = factory_cls()
-        options_factory._contribute_to_class(mcs_args)
-        # the above three lines can be replaced by:
-        # process_factory_meta_options(mcs_args, LoggingMetaOptionsFactory)
+        process_factory_meta_options(mcs_args, LoggingMetaOptionsFactory)
         return super().__new__(*mcs_args)
 ```
 
@@ -106,7 +117,7 @@ And lastly, create the public class, using the metaclass just defined:
 ```python
 class YourLoggableService(metaclass=LoggingMetaclass):
     def do_important_stuff(self):
-        if self.Meta.verbosity < 3:
+        if self.Meta.verbosity < 2:
             self._log('doing important stuff')
         else:
             self._log('doing really detailed important stuff like so')
@@ -120,7 +131,7 @@ class YourLoggableService(metaclass=LoggingMetaclass):
         elif self.Meta.log_destination == 'stderr':
             sys.stderr.write(msg)
             sys.stderr.flush()
-        else:
+        elif self.Meta.log_destination:
             with open(self.Meta.log_destination, 'a') as f:
                 f.write(msg)
 ```
