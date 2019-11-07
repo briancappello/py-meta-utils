@@ -437,8 +437,8 @@ class Singleton(type):
     def set_singleton_class(self, cls):
         if self in self._classes:
             from warnings import warn
-            warn('An instance of this singleton has already been created! Please set '
-                 'the class you wish to use earlier.', UserWarning)
+            warn(f'An instance of the singleton {self.__name__} has already '
+                 f'been created! Please set {cls.__name__} earlier.', UserWarning)
             return
 
         for base in self.__mro__:
