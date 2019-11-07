@@ -2,7 +2,23 @@ from collections import namedtuple
 from typing import *
 
 
-_missing = type('_missing', (), {'__bool__': lambda x: False})()
+class _missing_cls:
+    def __bool__(self):
+        return False
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        cls = self.__class__
+        return hash(f'{cls.__module__}:{cls.__name__}')
+
+
+_missing = _missing_cls()
+
 
 ABSTRACT_ATTR = '__abstract__'
 META_OPTIONS_FACTORY_CLASS_ATTR_NAME = '_meta_options_factory_class'

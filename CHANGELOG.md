@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.7.6 (unreleased)
+
+- fix bug with `_missing` equality check
+
 ## 0.7.5 (2019/02/25)
 
 - fix project name on PyPI having spaces
