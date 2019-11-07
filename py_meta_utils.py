@@ -126,7 +126,11 @@ class MetaOption:
         of any base classes.
         """
 
-    def get_value(self, Meta: Type[object], base_classes_meta, mcs_args: McsArgs) -> Any:
+    def get_value(self,
+                  Meta: Union[Type[object], None],
+                  base_classes_meta,  # type: MetaOptionsFactory
+                  mcs_args: McsArgs,
+                  ) -> Any:
         """
         Returns the value for ``self.name`` given the class-under-construction's class
         ``Meta``. If it's not found there, and ``self.inherit == True`` and there is a
