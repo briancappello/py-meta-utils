@@ -1,8 +1,12 @@
 # CHANGELOG
 
-## 0.7.6 (unreleased)
+## 0.7.7 (unreleased)
 
 - fix bug with `_missing` equality check
+
+## 0.7.6 (2019/04/11)
+
+- propagate `__classcell__` to `type.__new__` in `OptionalMetaclass.__new__`
 
 ## 0.7.5 (2019/02/25)
 
