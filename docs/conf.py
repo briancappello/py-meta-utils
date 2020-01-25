@@ -16,6 +16,7 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+import sphinx_material
 
 # -- Project information -----------------------------------------------------
 
@@ -26,7 +27,7 @@ author = 'Brian Cappello'
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-release = 'v0.7.5'
+release = 'v0.7.6'
 
 
 # -- General configuration ---------------------------------------------------
@@ -40,8 +41,11 @@ release = 'v0.7.5'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
+    'sphinx.ext.autosectionlabel',
     'sphinx.ext.viewcode',
     'm2r',
+    'sphinx_material',
 ]
 
 autodoc_member_order = 'bysource'
@@ -71,7 +75,7 @@ language = None
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'default'
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -79,29 +83,40 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'sphinx_material'
+html_theme_path = sphinx_material.html_theme_path()
+html_context = sphinx_material.get_html_context()
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
 html_theme_options = {
-    'logo_only': False,
-    'display_version': True,
-    'prev_next_buttons_location': 'bottom',
-    'style_external_links': False,
-    # Toc options
-    'collapse_navigation': False,
-    'sticky_navigation': True,
-    'navigation_depth': 4,
-    'includehidden': True,
-    'titles_only': False
+    'nav_title': 'Py Meta Utils',
+    'logo_icon': '&#8734',  # infinity
+
+    'color_primary': 'blue',
+    'color_accent': 'light-blue',
+
+    'repo_url': 'https://github.com/briancappello/py-meta-utils',
+    'repo_name': 'py-meta-utils',
+
+    'globaltoc_depth': 2,
+    'globaltoc_collapse': False,
+    'globaltoc_includehidden': False,
+
+    # disable tabs below the hero
+    'master_doc': False,
+    'nav_links': [],
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+html_context["css_files"] = [
+    '_static/theme_customizations.css',
+]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -111,8 +126,9 @@ html_static_path = ['_static']
 # default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
 # 'searchbox.html']``.
 #
-# html_sidebars = {}
-
+html_sidebars = {
+    "**": ["logo-text.html", "globaltoc.html", "localtoc.html", "searchbox.html"]
+}
 
 # -- Options for HTMLHelp output ---------------------------------------------
 

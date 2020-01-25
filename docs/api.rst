@@ -5,7 +5,7 @@ McsArgs
 -------
 
 .. autoclass:: py_meta_utils.McsArgs
-   :members:
+    :members:
 
 deep_getattr
 ------------
@@ -16,30 +16,30 @@ MetaOption
 ----------
 
 .. autoclass:: py_meta_utils.MetaOption
-   :members:
+    :members:
 
 AbstractMetaOption
 ^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: py_meta_utils.AbstractMetaOption
 
-   .. attribute:: name = 'abstract'
+    .. attribute:: name = 'abstract'
 
-   The attribute name on class ``Meta`` objects is ``abstract``.
+    The attribute name on class ``Meta`` objects is ``abstract``.
 
-   .. attribute:: default = False
+    .. attribute:: default = False
 
-   The default value is ``False``.
+    The default value is ``False``.
 
-   .. attribute:: inherit = False
+    .. attribute:: inherit = False
 
-   We do *not* inherit this value from the class ``Meta`` of base classes.
+    We do *not* inherit this value from the class ``Meta`` of base classes.
 
 MetaOptionsFactory
 ------------------
 
 .. autoclass:: py_meta_utils.MetaOptionsFactory
-   :members: _options, _get_meta_options, _contribute_to_class, _fill_from_meta
+    :members: _options, _get_meta_options, _contribute_to_class, _fill_from_meta
 
 process_factory_meta_options
 ----------------------------
@@ -53,18 +53,10 @@ EnsureProtectedMembers
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: py_meta_utils.EnsureProtectedMembers
+    :members:
 
 Singleton
 ^^^^^^^^^
 
 .. autoclass:: py_meta_utils.Singleton
-
-OptionalClass
-^^^^^^^^^^^^^
-
-.. autoclass:: py_meta_utils.OptionalClass
-
-OptionalMetaclass
-^^^^^^^^^^^^^^^^^
-
-.. autoclass:: py_meta_utils.OptionalMetaclass
+    :members:

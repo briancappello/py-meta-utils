@@ -1,6 +1,6 @@
 m2r
 pytest
 sphinx
-sphinx-rtd-theme
+sphinx-material
 tox
 tox-travis

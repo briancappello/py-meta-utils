@@ -154,7 +154,7 @@ class MetaOption:
         """
         Optional callback to verify the user provided a valid value.
 
-        Your implementation should assert/raise with an error message if invalid.
+        Your implementation should raise ValueError with an error message if invalid.
         """
         pass
 

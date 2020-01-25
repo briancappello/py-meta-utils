@@ -16,8 +16,7 @@ Py-Meta-Utils
 =============
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Table of Contents:
+    :maxdepth: 2
 
-   introduction
-   api
+    introduction
+    api
