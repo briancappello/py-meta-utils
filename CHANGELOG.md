@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.7.7 (unreleased)
+## 0.7.7 (2020/11/23)
 
 - fix bug with `_missing` equality check
 
