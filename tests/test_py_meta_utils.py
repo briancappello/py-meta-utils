@@ -241,13 +241,13 @@ def test_singleton_subclassable():
 
     with pytest.warns(UserWarning) as warnings:
         Single.set_singleton_class(Third)
-    assert 'An instance of this singleton has already been created! Please set ' \
-           'the class you wish to use earlier.' in warnings[0].message.args[0]
+    assert 'An instance of the singleton Single has already been created! Please set ' \
+           'Third earlier.' in warnings[0].message.args[0]
 
     with pytest.warns(UserWarning) as warnings:
         Second.set_singleton_class(Third)
-    assert 'An instance of this singleton has already been created! Please set ' \
-           'the class you wish to use earlier.' in warnings[0].message.args[0]
+    assert 'An instance of the singleton Second has already been created! Please set ' \
+           'Third earlier.' in warnings[0].message.args[0]
 
 
 def test_singleton_subclassable_without_set_is_instantiation_order_independent():
