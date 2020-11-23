@@ -20,9 +20,8 @@ setup(
     extras_require={
         'docs': [
             'm2r',
-            'sphinx',
-            'sphinx-autobuild',
-            'sphinx-rtd-theme',
+            'sphinx<3',
+            'sphinx-material',
         ],
     },
     python_requires='>=3.5',
