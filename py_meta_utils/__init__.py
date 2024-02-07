@@ -1,30 +1,33 @@
+from __future__ import annotations
+
+import typing as t
+
 from collections import namedtuple
-from typing import *
 
 
 class _missing_cls:
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return False
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return isinstance(other, self.__class__)
 
-    def __ne__(self, other):
+    def __ne__(self, other) -> bool:
         return not self.__eq__(other)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         cls = self.__class__
-        return hash(f'{cls.__module__}:{cls.__name__}')
+        return hash(f"{cls.__module__}:{cls.__name__}")
 
 
 _missing = _missing_cls()
 
 
-ABSTRACT_ATTR = '__abstract__'
-META_OPTIONS_FACTORY_CLASS_ATTR_NAME = '_meta_options_factory_class'
+ABSTRACT_ATTR = "__abstract__"
+META_OPTIONS_FACTORY_CLASS_ATTR_NAME = "_meta_options_factory_class"
 
 
-McsInitArgs = namedtuple('McsInitArgs', ('cls', 'name', 'bases', 'clsdict'))
+McsInitArgs = namedtuple("McsInitArgs", ("cls", "name", "bases", "clsdict"))
 
 
 class McsArgs:
@@ -45,17 +48,20 @@ class McsArgs:
                 # do stuff
                 return super().__new__(*mcs_args)
     """
-    def __init__(self,
-                 mcs: type,
-                 name: str,
-                 bases: Tuple[Type[object], ...],
-                 clsdict: Dict[str, Any]):
+
+    def __init__(
+        self,
+        mcs: type,
+        name: str,
+        bases: t.Tuple[t.Type[object], ...],
+        clsdict: t.Dict[str, t.Any],
+    ):
         self.mcs = mcs
         self.name = name
         self.bases = bases
         self.clsdict = clsdict
 
-    def getattr(self, name, default: Any = _missing):
+    def getattr(self, name, default: t.Any = _missing):
         """
         Convenience method equivalent to
         ``deep_getattr(mcs_args.clsdict, mcs_args.bases, 'attr_name'[, default])``
@@ -63,11 +69,11 @@ class McsArgs:
         return deep_getattr(self.clsdict, self.bases, name, default)
 
     @property
-    def module(self) -> Union[str, None]:
+    def module(self) -> t.Union[str, None]:
         """
         Returns the module of the class-under-construction, or ``None``.
         """
-        return self.clsdict.get('__module__')
+        return self.clsdict.get("__module__")
 
     @property
     def qualname(self) -> str:
@@ -76,17 +82,17 @@ class McsArgs:
         otherwise just the class name.
         """
         if self.module:
-            return self.module + '.' + self.name
+            return self.module + "." + self.name
         return self.name
 
     @property
-    def Meta(self) -> Type[object]:
+    def Meta(self) -> t.Type[object]:
         """
         Returns the class ``Meta`` from the class-under-construction.
 
         Raises ``KeyError`` if it's not present.
         """
-        return self.clsdict['Meta']
+        return self.clsdict["Meta"]
 
     @property
     def is_abstract(self) -> bool:
@@ -94,7 +100,7 @@ class McsArgs:
         Whether or not the class-under-construction was declared as abstract (**NOTE:**
         this property is usable even *before* the :class:`MetaOptionsFactory` has run)
         """
-        meta_value = getattr(self.clsdict.get('Meta'), 'abstract', False)
+        meta_value = getattr(self.clsdict.get("Meta"), "abstract", False)
         return self.clsdict.get(ABSTRACT_ATTR, meta_value) is True
 
     # we implement __iter__() to allow using the *args unpacking syntax
@@ -102,14 +108,20 @@ class McsArgs:
         return iter([self.mcs, self.name, self.bases, self.clsdict])
 
     def __repr__(self):
-        return '<McsArgs class={qualname!r}>'.format(qualname=self.qualname)
+        return "<McsArgs class={qualname!r}>".format(qualname=self.qualname)
 
 
 class MetaOption:
     """
     Base class for custom meta options.
     """
-    def __init__(self, name: str, default: Any = None, inherit: bool = False):
+
+    def __init__(self, name: str = "", default: t.Any = None, inherit: bool = False):
+        if not name:
+            raise TypeError(
+                f"`name` argument to {self.__class__.__name__} is required."
+            )
+
         self.name = name
         """
         The attribute name of the option on class ``Meta`` objects.
@@ -126,11 +138,12 @@ class MetaOption:
         of any base classes.
         """
 
-    def get_value(self,
-                  Meta: Union[Type[object], None],
-                  base_classes_meta,  # type: MetaOptionsFactory
-                  mcs_args: McsArgs,
-                  ) -> Any:
+    def get_value(
+        self,
+        Meta: t.Union[t.Type[object], None],
+        base_classes_meta,  # type: MetaOptionsFactory
+        mcs_args: McsArgs,
+    ) -> t.Any:
         """
         Returns the value for ``self.name`` given the class-under-construction's class
         ``Meta``. If it's not found there, and ``self.inherit == True`` and there is a
@@ -150,7 +163,7 @@ class MetaOption:
             value = getattr(Meta, self.name, value)
         return value
 
-    def check_value(self, value: Any, mcs_args: McsArgs):
+    def check_value(self, value: t.Any, mcs_args: McsArgs):
         """
         Optional callback to verify the user provided a valid value.
 
@@ -158,18 +171,19 @@ class MetaOption:
         """
         pass
 
-    def contribute_to_class(self, mcs_args: McsArgs, value: Any):
+    def contribute_to_class(self, mcs_args: McsArgs, value: t.Any):
         """
         Optional callback to modify the :class:`McsArgs` of the class-under-construction.
         """
         pass
 
     def __repr__(self):
-        return '{cls}(name={name!r}, default={default!r}, inherit={inherit})'.format(
+        return "{cls}(name={name!r}, default={default!r}, inherit={inherit})".format(
             cls=self.__class__.__name__,
             name=self.name,
             default=self.default,
-            inherit=self.inherit)
+            inherit=self.inherit,
+        )
 
 
 class AbstractMetaOption(MetaOption):
@@ -188,8 +202,9 @@ class AbstractMetaOption(MetaOption):
     In the latter case, we make sure to set the ``__abstract__`` class attribute
     for backwards compatibility with libraries that do not understand ``Meta`` options.
     """
+
     def __init__(self):
-        super().__init__(name='abstract', default=False, inherit=False)
+        super().__init__(name="abstract", default=False, inherit=False)
 
     def get_value(self, Meta, base_classes_meta, mcs_args: McsArgs):
         # class attributes take precedence over the class Meta's value
@@ -197,9 +212,9 @@ class AbstractMetaOption(MetaOption):
             return True
         return super().get_value(Meta, base_classes_meta, mcs_args) is True
 
-    def check_value(self, value: Any, mcs_args: McsArgs):
+    def check_value(self, value: t.Any, mcs_args: McsArgs):
         if not isinstance(value, bool):
-            raise TypeError('The abstract Meta option must be either True or False')
+            raise TypeError("The abstract Meta option must be either True or False")
 
     def contribute_to_class(self, mcs_args: McsArgs, value):
         mcs_args.clsdict[ABSTRACT_ATTR] = True if value is True else False
@@ -216,17 +231,19 @@ class EnsureProtectedMembers(type):
     Raises ``NameError`` if any public members not in `cls._allowed_properties`
     are found.
     """
+
     def __init__(cls, name, bases, clsdict):
-        allowed_props = set(getattr(cls, '_allowed_properties', ()))
+        allowed_props = set(getattr(cls, "_allowed_properties", ()))
 
         for attr, value in clsdict.items():
-            if not attr.startswith('_'):
+            if not attr.startswith("_"):
                 if attr in allowed_props and isinstance(value, property):
                     continue
 
-                raise NameError('{cls}.{attr} must be protected '
-                                '(rename to {cls}._{attr})'.format(cls=name,
-                                                                   attr=attr))
+                raise NameError(
+                    "{cls}.{attr} must be protected "
+                    "(rename to {cls}._{attr})".format(cls=name, attr=attr)
+                )
         super().__init__(name, bases, clsdict)
 
 
@@ -249,12 +266,12 @@ class MetaOptionsFactory(metaclass=EnsureProtectedMembers):
     they *must* be protected (ie, prefixed with an ``_`` character).
     """
 
-    _allowed_properties = []
+    _allowed_properties: t.List[str] = []
     """
     A list of public properties to allow on this factory.
     """
 
-    _options = []
+    _options: t.Union[t.List[MetaOption], t.List[t.Type[MetaOption]]] = []
     """
     A list of :class:`MetaOption` subclasses (or instances) that this factory supports.
     """
@@ -262,14 +279,16 @@ class MetaOptionsFactory(metaclass=EnsureProtectedMembers):
     def __init__(self):
         self._mcs_args = None
 
-    def _get_meta_options(self) -> List[MetaOption]:
+    def _get_meta_options(self) -> t.List[MetaOption]:
         """
         Returns a list of :class:`MetaOption` instances that this factory supports.
         """
-        return [option if isinstance(option, MetaOption) else option()
-                for option in self._options]
+        return [
+            option if isinstance(option, MetaOption) else option()
+            for option in self._options
+        ]
 
-    def _contribute_to_class(self, mcs_args: McsArgs):
+    def _contribute_to_class(self, mcs_args: McsArgs) -> None:
         """
         Where the magic happens. Takes one parameter, the :class:`McsArgs` of the
         class-under-construction, and processes the declared ``class Meta`` from
@@ -280,19 +299,24 @@ class MetaOptionsFactory(metaclass=EnsureProtectedMembers):
         """
         self._mcs_args = mcs_args
 
-        Meta = mcs_args.clsdict.pop('Meta', None)  # type: Type[object]
-        base_classes_meta = mcs_args.getattr('Meta', None)  # type: MetaOptionsFactory
+        Meta = mcs_args.clsdict.pop("Meta", None)  # type: t.Type[object]
+        base_classes_meta = mcs_args.getattr("Meta", None)  # type: MetaOptionsFactory
 
-        mcs_args.clsdict['Meta'] = self  # must come before _fill_from_meta, because
-                                         # some meta options may depend upon having
-                                         # access to the values of earlier meta options
+        mcs_args.clsdict["Meta"] = self  # must come before _fill_from_meta, because
+        # some meta options may depend upon having
+        # access to the values of earlier meta options
         self._fill_from_meta(Meta, base_classes_meta, mcs_args)
 
         for option in self._get_meta_options():
             option_value = getattr(self, option.name, None)
             option.contribute_to_class(mcs_args, option_value)
 
-    def _fill_from_meta(self, Meta: Type[object], base_classes_meta, mcs_args: McsArgs):
+    def _fill_from_meta(
+        self,
+        Meta: t.Type[object],
+        base_classes_meta,
+        mcs_args: McsArgs,
+    ) -> None:
         """
         Iterate over our supported meta options, and set attributes on the factory
         instance (self) for each meta option's name/value. Raises ``TypeError`` if
@@ -300,49 +324,63 @@ class MetaOptionsFactory(metaclass=EnsureProtectedMembers):
         ``class Meta``.
         """
         # Exclude private/protected fields from the Meta
-        meta_attrs = {} if not Meta else {k: v for k, v in vars(Meta).items()
-                                          if not k.startswith('_')}
+        meta_attrs = (
+            {}
+            if not Meta
+            else {k: v for k, v in vars(Meta).items() if not k.startswith("_")}
+        )
 
         for option in self._get_meta_options():
             existing = getattr(self, option.name, None)
-            if existing and not (existing in self._allowed_properties
-                                 and not isinstance(existing, property)):
-                raise RuntimeError("Can't override field {name}."
-                                   "".format(name=option.name))
+            if existing and not (
+                existing in self._allowed_properties
+                and not isinstance(existing, property)
+            ):
+                raise RuntimeError(
+                    "Can't override field {name}." "".format(name=option.name)
+                )
             value = option.get_value(Meta, base_classes_meta, mcs_args)
             option.check_value(value, mcs_args)
             meta_attrs.pop(option.name, None)
-            if option.name != '_':
+            if option.name != "_":
                 setattr(self, option.name, value)
 
         if meta_attrs:
             # Only allow attributes on the Meta that have a respective MetaOption
             raise TypeError(
-                '`class Meta` for {cls} got unknown attribute(s) {attrs}'.format(
-                    cls=mcs_args.name,
-                    attrs=', '.join(sorted(meta_attrs.keys()))))
+                "`class Meta` for {cls} got unknown attribute(s) {attrs}".format(
+                    cls=mcs_args.name, attrs=", ".join(sorted(meta_attrs.keys()))
+                )
+            )
 
-    def _to_clsdict(self):
-        return dict(**{option.name: getattr(self, option.name)
-                       for option in self._get_meta_options()
-                       if option.name != '_'},
-                    **{'_mcs_args': self._mcs_args,
-                       '__module__': self._mcs_args.qualname,
-                       },
-                    )
+    def _to_clsdict(self) -> t.Dict[str, t.Any]:
+        return dict(
+            **{
+                option.name: getattr(self, option.name)
+                for option in self._get_meta_options()
+                if option.name != "_"
+            },
+            **{
+                "_mcs_args": self._mcs_args,
+                "__module__": self._mcs_args.qualname,
+            },
+        )
 
-    def __repr__(self):
-        return '{cls}(options={attrs!r})'.format(
+    def __repr__(self) -> str:
+        return "{cls}(options={attrs!r})".format(
             cls=self.__class__.__name__,
-            attrs={option.name: getattr(self, option.name, None)
-                   for option in self._get_meta_options()})
+            attrs={
+                option.name: getattr(self, option.name, None)
+                for option in self._get_meta_options()
+            },
+        )
 
 
 def process_factory_meta_options(
-        mcs_args: McsArgs,
-        default_factory_class: Type[MetaOptionsFactory] = MetaOptionsFactory,
-        factory_attr_name: str = META_OPTIONS_FACTORY_CLASS_ATTR_NAME) \
-        -> MetaOptionsFactory:
+    mcs_args: McsArgs,
+    default_factory_class: t.Type[MetaOptionsFactory] = MetaOptionsFactory,
+    factory_attr_name: str = META_OPTIONS_FACTORY_CLASS_ATTR_NAME,
+) -> MetaOptionsFactory:
     """
     Main entry point for consumer metaclasses. Usage::
 
@@ -400,7 +438,8 @@ def process_factory_meta_options(
     """
     factory_cls = mcs_args.getattr(
         factory_attr_name or META_OPTIONS_FACTORY_CLASS_ATTR_NAME,
-        default_factory_class)
+        default_factory_class,
+    )
     options_factory = factory_cls()
     options_factory._contribute_to_class(mcs_args)
     return options_factory
@@ -431,14 +470,18 @@ class Singleton(type):
         assert foo == sub == Foo() == YourFooSubclass()
     """
 
-    _classes = {}
-    _instances = {}
+    _classes: t.Dict[type, type] = {}
+    _instances: t.Dict[type, object] = {}
 
     def set_singleton_class(self, cls):
         if self in self._classes:
             from warnings import warn
-            warn(f'An instance of the singleton {self.__name__} has already '
-                 f'been created! Please set {cls.__name__} earlier.', UserWarning)
+
+            warn(
+                f"An instance of the singleton {self.__name__} has already "
+                f"been created! Please set {cls.__name__} earlier.",
+                UserWarning,
+            )
             return
 
         for base in self.__mro__:
@@ -447,18 +490,20 @@ class Singleton(type):
 
     def __call__(cls, *args, **kwargs):
         if cls not in cls._classes:
-            cls._classes[cls] = cls
+            cls._classes[cls] = cls  # type: ignore
 
-        cls = cls._classes[cls]
+        cls = cls._classes[cls]  # type: ignore
         if cls not in cls._instances:
             cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
 
 
-def deep_getattr(clsdict: Dict[str, Any],
-                 bases: Tuple[Type[object], ...],
-                 name: str,
-                 default: Any = _missing) -> Any:
+def deep_getattr(
+    clsdict: t.Dict[str, t.Any],
+    bases: t.Tuple[t.Type[object], ...],
+    name: str,
+    default: t.Any = _missing,
+) -> t.Any:
     """
     Acts just like ``getattr`` would on a constructed class object, except this operates
     on the pre-construction class dictionary and base classes. In other words, first we
@@ -496,7 +541,7 @@ class OptionalMetaclass(type):
     __optional_class = None
 
     def __new__(mcs, name, bases, clsdict):
-        if mcs.__optional_class is None or '__classcell__' in clsdict:
+        if mcs.__optional_class is None or "__classcell__" in clsdict:
             mcs.__optional_class = super().__new__(mcs, name, bases, clsdict)
         return mcs.__optional_class
 
@@ -535,5 +580,6 @@ class OptionalClass(metaclass=OptionalMetaclass):
         class Optional(SomeClass):
             pass
     """
+
     def __init__(self, *args, **kwargs):
         pass

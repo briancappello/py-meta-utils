@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "py-meta-utils"
+version = "0.8.0"
+description = "Metaclass and metaprogramming utilities for Python"
+authors = ["Brian Cappello <briancappello@gmail.com>"]
+readme = "README.md"
+include = ["*.md"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.group.docs.dependencies]
+sphinx-material = "^0.0.36"
+m2r = "^0.3.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+tox = "^4.12.1"
+mypy = "^1.8.0"
+black = "^24.1.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+exclude = [
+    "docs",
+]

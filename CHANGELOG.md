@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## v0.8.0 (2024/02/06)
+
+- bump minimum Python version to 3.8
+- add `py.typed` for type hinting support
+- convert to `pyproject.toml`
+- format code with `black`
+
 ## v0.7.8 (2020/11/23)
 
 - fix tests
