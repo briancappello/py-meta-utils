@@ -1,6 +1,0 @@
-m2r
-pytest
-sphinx<3
-sphinx-material
-tox
-tox-travis
