@@ -18,6 +18,7 @@
 
 import sphinx_material
 
+
 # -- Project information -----------------------------------------------------
 
 project = "Py-Meta-Utils"

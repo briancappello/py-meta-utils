@@ -118,9 +118,7 @@ class MetaOption:
 
     def __init__(self, name: str = "", default: t.Any = None, inherit: bool = False):
         if not name:
-            raise TypeError(
-                f"`name` argument to {self.__class__.__name__} is required."
-            )
+            raise TypeError(f"`name` argument to {self.__class__.__name__} is required.")
 
         self.name = name
         """

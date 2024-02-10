@@ -1,11 +1,11 @@
 import pytest
 
 from py_meta_utils import (
+    AbstractMetaOption,
+    EnsureProtectedMembers,
     McsArgs,
     MetaOption,
-    AbstractMetaOption,
     MetaOptionsFactory,
-    EnsureProtectedMembers,
     Singleton,
     deep_getattr,
 )
